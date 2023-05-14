@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using ScienceTrack.Models;
 using ScienceTrack.Repositories;
 using System.Security.Claims;
 
@@ -24,7 +25,8 @@ namespace ScienceTrack.Services
             if (user is null) return null;
             var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.UserName)
+                    new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                    new Claim(ClaimTypes.Role, repository.Roles.Get(user.Role.Value).RoleName.ToString())
                 };
 
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
@@ -46,7 +48,8 @@ namespace ScienceTrack.Services
                 var user = new User()
                 {
                     UserName = userName,
-                    PasswordHash = password
+                    PasswordHash = password,
+                    Role = 2
                 };
 
                 user.PasswordHash = new PasswordHasher<User>().HashPassword(user, password);

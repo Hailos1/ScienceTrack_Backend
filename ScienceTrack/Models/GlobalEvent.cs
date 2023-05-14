@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace ScienceTrack.Models;
 
@@ -18,6 +17,5 @@ public partial class GlobalEvent
 
     public decimal? Chance { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<Round> Rounds { get; set; } = new List<Round>();
 }

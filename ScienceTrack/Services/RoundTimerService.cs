@@ -1,4 +1,5 @@
 ﻿using ScienceTrack.Repositories;
+using ScienceTrack.Models;
 
 namespace ScienceTrack.Services
 {

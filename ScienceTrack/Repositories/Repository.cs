@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ScienceTrack.Models;
+using System.Data;
 
 namespace ScienceTrack.Repositories
 {
@@ -21,6 +22,19 @@ namespace ScienceTrack.Repositories
         private GenericRepository<RoundUser> roundUsers { get; set; }
 
         private GenericRepository<User> users { get; set; }
+        private GenericRepository<Role> roles { get; set; }
+
+        public GenericRepository<Role> Roles
+        {
+            get
+            {
+                if (this.roles == null)
+                {
+                    this.roles = new GenericRepository<Role>(context);
+                }
+                return roles;
+            }
+        }
 
         public GenericRepository<Game> Games
         {

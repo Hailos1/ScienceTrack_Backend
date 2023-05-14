@@ -1,4 +1,6 @@
-﻿namespace ScienceTrack.DTO
+﻿using ScienceTrack.Models;
+
+namespace ScienceTrack.DTO
 {
     public class UserDTO
     {

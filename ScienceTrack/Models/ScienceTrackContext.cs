@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using ScienceTrack.Models;
 
-namespace ScienceTrack.Models;
+namespace ScienceTrack;
 
 public partial class ScienceTrackContext : DbContext
 {
@@ -25,6 +26,8 @@ public partial class ScienceTrackContext : DbContext
 
     public virtual DbSet<LocalSolution> LocalSolutions { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
     public virtual DbSet<Round> Rounds { get; set; }
 
     public virtual DbSet<RoundUser> RoundUsers { get; set; }
@@ -33,7 +36,7 @@ public partial class ScienceTrackContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=science_track;Username=postgres;Password=563596;Include Error Detail=True");
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=science_track;Username=postgres;Password=563596");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,6 +105,14 @@ public partial class ScienceTrackContext : DbContext
             entity.Property(e => e.SocialStatus).HasColumnName("socialStatus");
         });
 
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("Roles_pkey");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.RoleName).HasColumnName("roleName");
+        });
+
         modelBuilder.Entity<Round>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Rounds_pkey");
@@ -139,7 +150,6 @@ public partial class ScienceTrackContext : DbContext
 
             entity.HasOne(d => d.LocalSolutionNavigation).WithMany(p => p.RoundUsers)
                 .HasForeignKey(d => d.LocalSolution)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("RoundUsers_localSolution_fkey");
 
             entity.HasOne(d => d.RoundNavigation).WithMany(p => p.RoundUsers)
@@ -159,7 +169,12 @@ public partial class ScienceTrackContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.PasswordHash).HasColumnName("passwordHash");
+            entity.Property(e => e.Role).HasColumnName("role");
             entity.Property(e => e.UserName).HasColumnName("userName");
+
+            entity.HasOne(d => d.RoleNavigation).WithMany(p => p.Users)
+                .HasForeignKey(d => d.Role)
+                .HasConstraintName("Users_role_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

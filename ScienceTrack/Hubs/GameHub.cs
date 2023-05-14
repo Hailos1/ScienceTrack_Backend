@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using ScienceTrack.Models;
 using ScienceTrack.Repositories;
 using ScienceTrack.Services;
 using System.Threading;
@@ -16,7 +18,7 @@ namespace ScienceTrack.Hubs
             this.gameService = gameService;           
             this.timeService = new RoundTimerService(repository, gameService, sendNewRound);
         }
-
+        [Authorize(Roles = "Admin")]
         public async Task StartGame(int gameId)
         {
             var startRound = await gameService.StartGame(gameId);            

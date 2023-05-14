@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using ScienceTrack.Models;
 
-namespace ScienceTrack;
+namespace ScienceTrack.Models;
 
 public partial class User
 {
@@ -12,8 +10,12 @@ public partial class User
     public string UserName { get; set; } = null!;
 
     public string PasswordHash { get; set; } = null!;
-    [JsonIgnore]
+
+    public int? Role { get; set; }
+
     public virtual ICollection<GameUser> GameUsers { get; set; } = new List<GameUser>();
-    [JsonIgnore]
+
+    public virtual Role? RoleNavigation { get; set; }
+
     public virtual ICollection<RoundUser> RoundUsers { get; set; } = new List<RoundUser>();
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace ScienceTrack.Models;
 
@@ -17,6 +16,6 @@ public partial class LocalEvent
     public int? AdministrativeStatus { get; set; }
 
     public decimal? Chance { get; set; }
-    [JsonIgnore]
+
     public virtual ICollection<RoundUser> RoundUsers { get; set; } = new List<RoundUser>();
 }
