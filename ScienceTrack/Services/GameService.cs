@@ -26,20 +26,25 @@ namespace ScienceTrack.Services
 
         public async Task<GameUser> AddUser(int gameId, int userId)
         {
-            var gameUser = new GameUser()
+            if (repository.Games.Get(gameId).Status == "created")
             {
-                AdministrativeStatus = 0,
-                FinanceStatus = 0,
-                SocialStatus = 0,
-                Game = gameId,
-                User = userId
-            };
-            var user = repository.GameUsers.Create(gameUser);
-            await repository.GameUsers.Save();
-            return user;
-        }
-        
-        public async Task<Round> StartGame(int gameId)
+                var gameUser = new GameUser()
+                {
+                    AdministrativeStatus = 0,
+                    FinanceStatus = 0,
+                    SocialStatus = 0,
+                    Game = gameId,
+                    User = userId
+                };
+                var user = repository.GameUsers.Create(gameUser);
+                await repository.GameUsers.Save();
+                return user;
+            }
+            else
+                return null;
+            }
+
+            public async Task<Round> StartGame(int gameId)
         {
             var game = repository.Games.Get(gameId);
             if (game.Status == "created")
@@ -74,7 +79,7 @@ namespace ScienceTrack.Services
 
         public async Task<Round> NextRound(int gameId, int oldRoundId)
         {
-            if (repository.Rounds.GetList(gameId).Result.Count() < 50)
+            if (repository.Rounds.GetList(gameId).Result.Count() < 50 && repository.Games.Get(gameId).Status != "finished")
             {
                 var oldRound = repository.Rounds.Get(oldRoundId);
                 oldRound.Status = "finished";
@@ -106,6 +111,13 @@ namespace ScienceTrack.Services
         public async Task<IEnumerable<RoundUser>> GetRoundUsers(int roundId)
         {
             return await repository.RoundUsers.context.RoundUsers.Where(x => x.Round == roundId).ToListAsync();
+        }
+
+        public async Task<bool> FinishGame(int gameId)
+        {
+            repository.Games.Get(gameId).Status = "finished";
+            await repository.Games.Save();
+            return true;
         }
 
         private async Task InitialRoundUsers(int gameId, int roundId)

@@ -25,12 +25,12 @@ namespace ScienceTrack.Hubs
             timeService.StartTimer(gameId);
             await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", startRound);
         }
-
+        [Authorize]
         public async Task AddToGroup(string gameId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
         }
-
+        [Authorize]
         public async Task RemoveFromGroup(string gameId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
