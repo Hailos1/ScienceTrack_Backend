@@ -16,7 +16,7 @@ namespace ScienceTrack.Hubs
         { 
             this.repository = repository;
             this.gameService = gameService;           
-            this.timeService = new RoundTimerService(repository, gameService, sendNewRound);
+            this.timeService = new RoundTimerService(repository, gameService, sendNewRound, sendCurrentTime);
         }
         [Authorize(Roles = "Admin")]
         public async Task StartGame(int gameId)
@@ -39,6 +39,11 @@ namespace ScienceTrack.Hubs
         private async void sendNewRound(int gameId, Round round)
         {
             await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round);
+        }
+
+        private async void sendCurrentTime(int gameId, int time)
+        {
+            await Clients.Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
         }
     }
 }
