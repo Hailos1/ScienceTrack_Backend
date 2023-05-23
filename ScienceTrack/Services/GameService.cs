@@ -153,5 +153,11 @@ namespace ScienceTrack.Services
             });
             return gameUsers;
         }
+
+        public async Task<Game> GetLastGame()
+        {
+            var game = await repository.Games.GetList();
+            return game.Last();
+        }
     }
 }

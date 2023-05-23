@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ScienceTrack.Models;
 using ScienceTrack.Repositories;
 using ScienceTrack.Services;
 
@@ -56,6 +57,13 @@ namespace ScienceTrack.Controllers
         public async Task<IActionResult> PlayerChoose(int roundId, int userId, int localSolutionId)
         {
             return Ok(await game.PlayerChoose(roundId, userId, localSolutionId));
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetLastGame()
+        {
+            return Ok(await game.GetLastGame());
         }
 
         [HttpGet]
