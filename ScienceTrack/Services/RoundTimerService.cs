@@ -39,6 +39,7 @@ namespace ScienceTrack.Services
             timeCallback(gameId, startRoundTimers[gameId]);
             if (startRoundTimers[gameId] >= 120)
             {
+                timer.Stop();
                 LastTickRoundTimer(gameId);
             }
         }
@@ -64,6 +65,7 @@ namespace ScienceTrack.Services
                 return;
             }
             roundCallback(gameId, newRound!.Result);
+            realRoundTimers[gameId].Start();
         }
     }
 }
