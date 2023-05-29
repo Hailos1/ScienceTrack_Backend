@@ -18,7 +18,7 @@ namespace ScienceTrack.Hubs
             this.gameService = gameService;           
             this.timeService = new RoundTimerService(repository, gameService, sendNewRound, sendCurrentTime);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task StartGame(int gameId)
         {
             var startRound = await gameService.StartGame(gameId);            

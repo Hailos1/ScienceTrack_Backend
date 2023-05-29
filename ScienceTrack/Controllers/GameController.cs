@@ -18,14 +18,14 @@ namespace ScienceTrack.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateGame()
         {
             return Ok(await game.CreateGame());
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> StartGame(int gameId)
         {
             return Ok(await game.StartGame(gameId));
