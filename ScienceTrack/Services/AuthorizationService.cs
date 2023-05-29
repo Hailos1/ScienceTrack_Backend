@@ -44,7 +44,8 @@ namespace ScienceTrack.Services
         [Authorize]
         public async Task<User?> IsAuthorize(HttpContext context)
         {
-            return repository.Users.GetList().Result.First(x => x.UserName == context.User.Claims.First().Value);
+            if (context.User.Claims.FirstOrDefault() == null) return null;
+            return repository.Users.GetList().Result.FirstOrDefault(x => x.UserName == context.User.Claims.First().Value);
         }
 
         public async Task<User?> Register(HttpContext context, string userName, string password)
