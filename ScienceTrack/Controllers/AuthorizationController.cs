@@ -28,7 +28,7 @@ namespace ScienceTrack.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> IsAuthorize(string userName, string password)
+        public async Task<IActionResult> IsAuthorize()
         {
             return Ok(await authorizationService.IsAuthorize(HttpContext));
         }
