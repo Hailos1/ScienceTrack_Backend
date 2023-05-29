@@ -48,7 +48,7 @@ namespace ScienceTrack.Services
             return repository.Users.GetList().Result.FirstOrDefault(x => x.UserName == context.User.Claims.First().Value);
         }
 
-        public async Task<User?> Register(HttpContext context, string userName, string password)
+        public async Task<User?> Register(HttpContext context, string userName, string officialName, string password)
         {
             if (repository.Users.GetList().Result.FirstOrDefault(x => x.UserName.ToLower() == userName.ToLower()) is null)
             {
@@ -56,6 +56,7 @@ namespace ScienceTrack.Services
                 {
                     UserName = userName,
                     PasswordHash = password,
+                    OfficialName = officialName,
                     Role = 2
                 };
 

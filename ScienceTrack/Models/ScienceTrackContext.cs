@@ -171,6 +171,7 @@ public partial class ScienceTrackContext : DbContext
             entity.Property(e => e.PasswordHash).HasColumnName("passwordHash");
             entity.Property(e => e.Role).HasColumnName("role");
             entity.Property(e => e.UserName).HasColumnName("userName");
+            entity.Property(e => e.OfficialName).HasColumnName("officialName");   
 
             entity.HasOne(d => d.RoleNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.Role)

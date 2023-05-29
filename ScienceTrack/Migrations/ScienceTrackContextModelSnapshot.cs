@@ -283,6 +283,11 @@ namespace ScienceTrack.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("OfficialName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("officialName");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text")
