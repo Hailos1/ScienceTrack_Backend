@@ -27,6 +27,13 @@ namespace ScienceTrack.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> IsAuthorize(string userName, string password)
+        {
+            return Ok(await authorizationService.IsAuthorize(HttpContext));
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Register(string userName, string password)
         {
             var user = await authorizationService.Register(HttpContext, userName, password);

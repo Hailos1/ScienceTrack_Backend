@@ -41,6 +41,12 @@ namespace ScienceTrack.Services
             return true;
         }
 
+        [Authorize]
+        public async Task<User?> IsAuthorize(HttpContext context)
+        {
+            return repository.Users.GetList().Result.First(x => x.UserName == context.User.Claims.First().Value);
+        }
+
         public async Task<User?> Register(HttpContext context, string userName, string password)
         {
             if (repository.Users.GetList().Result.FirstOrDefault(x => x.UserName.ToLower() == userName.ToLower()) is null)
