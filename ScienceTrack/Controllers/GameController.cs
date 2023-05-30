@@ -72,5 +72,12 @@ namespace ScienceTrack.Controllers
         {
             return Ok(await game.GetScore(gameId));
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetSolutions(int pageNum = 1, int pageSize = 10)
+        {
+            return Ok( await game.GetSolutions(Response, pageNum, pageSize));
+        }
     }
 }

@@ -77,6 +77,17 @@ namespace ScienceTrack.Services
             return roundUser;
         }
 
+        public async Task<IEnumerable<LocalSolution>> GetSolutions(HttpResponse response, int pageNum = 1, int pageSize = 10)
+        {
+            var solutions = await repository.LocalSolutions.GetList();
+            var count = solutions.Count();
+            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+            response.Headers.Add("TotalPages", $"{totalPages}");
+            return solutions
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize);
+        }
+
         public async Task<Round> NextRound(int gameId, int oldRoundId)
         {
             if (repository.Rounds.GetList(gameId).Result.Count() < 50 && repository.Games.Get(gameId).Status != "finished")
