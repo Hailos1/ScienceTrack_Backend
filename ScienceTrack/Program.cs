@@ -20,6 +20,7 @@ builder.Services.AddScoped<Repository>();
 builder.Services.AddSingleton<RandomService>();
 builder.Services.AddScoped<GameService>();
 builder.Services.AddTransient<AuthorizationService>();
+builder.Services.AddSingleton<RoundTimerService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddSignalR(options =>
 {

@@ -1,6 +1,7 @@
 ﻿using ScienceTrack.Repositories;
 using ScienceTrack.Models;
 using System.Timers;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ScienceTrack.Services
 {
@@ -10,15 +11,14 @@ namespace ScienceTrack.Services
         private Dictionary<int, int> startRoundTimers;
         private Repository repository;
         private GameService gameService;
-        private Action<int, Round> roundCallback;
-        private Action<int, int> timeCallback;
+        private Action<int, Round, IHubCallerClients> roundCallback = sendNewRound;
+        private Action<int, int, IHubCallerClients> timeCallback = sendCurrentTime;
+        public IHubCallerClients Clients { get; set; }
         
-        public RoundTimerService(Repository repository, GameService gameService, Action<int, Round> roundCallback, Action<int, int> timeCallback)
+        public RoundTimerService(Repository repository, GameService gameService)
         {
             this.repository = repository;
             this.gameService = gameService;
-            this.roundCallback = roundCallback;
-            this.timeCallback = timeCallback;
             realRoundTimers = new Dictionary<int, System.Timers.Timer>();
             startRoundTimers = new Dictionary<int, int>();
         }
@@ -36,7 +36,7 @@ namespace ScienceTrack.Services
         {
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
-            timeCallback(gameId, startRoundTimers[gameId]);
+            timeCallback(gameId, startRoundTimers[gameId], Clients);
             if (startRoundTimers[gameId] >= 120)
             {
                 timer.Stop();
@@ -58,14 +58,24 @@ namespace ScienceTrack.Services
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
-                roundCallback(gameId, null);
+                roundCallback(gameId, null, Clients);
             }
             if (repository.Rounds.GetList(gameId).Result.Count() == 50)
             {
                 return;
             }
-            roundCallback(gameId, newRound!.Result);
+            roundCallback(gameId, newRound!.Result, Clients);
             realRoundTimers[gameId].Start();
+        }
+        private static async void sendNewRound(int gameId, Round round, IHubCallerClients clients)
+        {
+            var rep = new Repository();
+            await clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round);
+        }
+
+        private static async void sendCurrentTime(int gameId, int time, IHubCallerClients clients)
+        {
+            await clients.Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
         }
     }
 }
