@@ -16,7 +16,7 @@ namespace ScienceTrack.Controllers
             this.authorizationService = authorizationService;
         }
         [HttpPost]
-        public async Task<IActionResult> Authorize(string userName, string password)
+        public async Task<IActionResult> Authorize([FromBody] string userName, [FromBody] string password)
         {
             var user = await authorizationService.Authorize(HttpContext, userName, password);
             if (user == null) 
@@ -36,7 +36,7 @@ namespace ScienceTrack.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string userName, string officialName, string password)
+        public async Task<IActionResult> Register([FromBody] string userName, [FromBody] string officialName, [FromBody] string password)
         {
             var user = await authorizationService.Register(HttpContext, userName, officialName, password);
             if (user == null)
