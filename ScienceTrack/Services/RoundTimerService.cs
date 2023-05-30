@@ -1,7 +1,6 @@
 ﻿using ScienceTrack.Repositories;
 using ScienceTrack.Models;
 using System.Timers;
-using Microsoft.AspNetCore.SignalR;
 
 namespace ScienceTrack.Services
 {
@@ -9,21 +8,23 @@ namespace ScienceTrack.Services
     {
         private Dictionary<int, System.Timers.Timer> realRoundTimers;
         private Dictionary<int, int> startRoundTimers;
-        private Dictionary<int, IHubCallerClients> GameClients;
         private Repository repository;
         private GameService gameService;
+        private Action<int, Round> roundCallback;
+        private Action<int, int> timeCallback;
         
-        public RoundTimerService(Repository repository, GameService gameService)
+        public RoundTimerService(Repository repository, GameService gameService, Action<int, Round> roundCallback, Action<int, int> timeCallback)
         {
             this.repository = repository;
             this.gameService = gameService;
+            this.roundCallback = roundCallback;
+            this.timeCallback = timeCallback;
             realRoundTimers = new Dictionary<int, System.Timers.Timer>();
             startRoundTimers = new Dictionary<int, int>();
         }
 
-        public void StartTimer(int gameId, IHubCallerClients clients) 
+        public void StartTimer(int gameId) 
         {
-            GameClients.Add(gameId, clients);
             realRoundTimers.Add(gameId, new System.Timers.Timer(new TimeSpan(60000 * 2)));
             realRoundTimers[gameId].Interval = 1000;
             realRoundTimers[gameId].Elapsed += new ElapsedEventHandler((sender, args) => TickRoundTimer(sender, args, gameId));
@@ -35,7 +36,7 @@ namespace ScienceTrack.Services
         {
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
-            sendCurrentTime(gameId, startRoundTimers[gameId]);
+            timeCallback(gameId, startRoundTimers[gameId]);
             if (startRoundTimers[gameId] >= 120)
             {
                 timer.Stop();
@@ -57,24 +58,14 @@ namespace ScienceTrack.Services
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
-                sendNewRound(gameId, null);
+                roundCallback(gameId, null);
             }
             if (repository.Rounds.GetList(gameId).Result.Count() == 50)
             {
                 return;
             }
-            sendNewRound(gameId, newRound!.Result);
+            roundCallback(gameId, newRound!.Result);
             realRoundTimers[gameId].Start();
-        }
-
-        private async void sendNewRound(int gameId, Round round)
-        {
-            await GameClients[gameId].Group(Convert.ToString(gameId)).SendAsync("NewRound", round, gameService.GetRoundUsers(round.Id));
-        }
-
-        private async void sendCurrentTime(int gameId, int time)
-        {
-            await GameClients[gameId].Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
         }
     }
 }
