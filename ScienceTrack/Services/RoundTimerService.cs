@@ -47,34 +47,37 @@ namespace ScienceTrack.Services
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
             Clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
-            if (startRoundTimers[gameId] >= 100)
+            if (startRoundTimers[gameId] >= 10)
             {
                 timer.Stop();
                 LastTickRoundTimer(gameId);
             }
         }
 
-        private void LastTickRoundTimer(int obj)
+        private async void LastTickRoundTimer(int obj)
         {
             int gameId = obj;
             var oldRound = new Repository().Rounds.GetList(gameId).Result.Last();
-            var newRound = new GameService(new Repository(), new RandomService()).NextRound(gameId, oldRound.Id);
-            if (new Repository().Rounds.GetList(gameId).Result.Count() == 50)
-            {
-                return;
-            }
-            if (newRound == null)
+            var newRound = new GameService(new Repository(), new RandomService()).NextRound(gameId, oldRound.Id).Result;
+            realRoundTimers[gameId].Stop();
+            startRoundTimers.Remove(gameId);
+            startRoundTimers.Add(gameId, 1);
+            realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(50000 * 2));
+            realRoundTimers[gameId].Interval = 1000;
+            realRoundTimers[gameId].Elapsed += new ElapsedEventHandler((sender, args) => TickRoundTimer(sender, args, gameId));
+
+            if (newRound == null) 
             {
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
                 UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", null));
             }
-            UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", new RoundDTO(newRound.Result)));
-            realRoundTimers[gameId].Stop();
-            startRoundTimers.Remove(gameId);
-            startRoundTimers.Add(gameId, 1);
-            realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(50000 * 2));       
+            if (new Repository().Rounds.GetList(gameId).Result.Count() == 50)
+            {
+                return;
+            }
+            await Clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("NewRound", new RoundDTO(newRound));
             realRoundTimers[gameId].Start();
         }
     }
