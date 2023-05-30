@@ -12,8 +12,9 @@ namespace ScienceTrack.Services
         //private Repository repository = new Repository();
         //private RandomService randomService = new RandomService();
         //private GameService gameService;
-        private Action<int, Round, IHubCallerClients> roundCallback = sendNewRound;
-        private Action<int, int, IHubCallerClients> timeCallback = sendCurrentTime;
+        private Action<int, Round, IHubCallerClients, Dictionary<string, string>> roundCallback = sendNewRound;
+        private Action<int, int, IHubCallerClients, Dictionary<string, string>> timeCallback = sendCurrentTime;
+        private Dictionary<string, string> UsersConnections = new Dictionary<string, string>();
         public IHubCallerClients? Clients { get; set; }
         
         public RoundTimerService()
@@ -21,6 +22,15 @@ namespace ScienceTrack.Services
             //gameService = new GameService(repository, randomService);
             realRoundTimers = new Dictionary<int, System.Timers.Timer>();
             startRoundTimers = new Dictionary<int, int>();
+        }
+
+        public void ChangeUserConnection(string userName, string connectionId)
+        {
+            if (UsersConnections.ContainsKey(userName))
+            {
+                UsersConnections[userName] = connectionId;
+            }
+            UsersConnections.Add(userName, connectionId);
         }
 
         public void StartTimer(int gameId) 
@@ -40,8 +50,8 @@ namespace ScienceTrack.Services
         {
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
-            timeCallback(gameId, startRoundTimers[gameId], Clients);
-            if (startRoundTimers[gameId] >= 120)
+            timeCallback(gameId, startRoundTimers[gameId], Clients, UsersConnections);
+            if (startRoundTimers[gameId] >= 100)
             {
                 timer.Stop();
                 LastTickRoundTimer(gameId);
@@ -62,24 +72,27 @@ namespace ScienceTrack.Services
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
-                roundCallback(gameId, null, Clients);
+                roundCallback(gameId, null, Clients, UsersConnections);
             }
             if (new Repository().Rounds.GetList(gameId).Result.Count() == 50)
             {
                 return;
             }
-            roundCallback(gameId, newRound!.Result, Clients);
+            roundCallback(gameId, newRound!.Result, Clients, UsersConnections);
             realRoundTimers[gameId].Start();
         }
-        private static async void sendNewRound(int gameId, Round round, IHubCallerClients clients)
+        private static async void sendNewRound(int gameId, Round round, IHubCallerClients clients, Dictionary<string, string>  UsersConnections)
         {
-            var rep = new Repository();
-            await clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round);
+            await using var rep = new ScienceTrackContext();
+            UsersConnections.Select(x => clients.Client(x.Value).SendAsync("NewRound", rep.RoundUsers.FirstOrDefault(k => k.User == rep.Users.First(u => u.UserName == x.Key).Id).LocalEvent));
+            //await clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("NewRound", round);
+            //await clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round);
         }
 
-        private static async void sendCurrentTime(int gameId, int time, IHubCallerClients clients)
+        private static async void sendCurrentTime(int gameId, int time, IHubCallerClients clients, Dictionary<string, string> UsersConnections)
         {
-            await clients.Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
+            await clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("CurrentTime", time);
+            //await clients.Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
         }
     }
 }

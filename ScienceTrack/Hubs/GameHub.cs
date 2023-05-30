@@ -30,6 +30,7 @@ namespace ScienceTrack.Hubs
         public async Task AddToGroup(string gameId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+            timeService.ChangeUserConnection(Context.UserIdentifier, Context.ConnectionId);
             timeService.Clients = Clients;
         }
         [Authorize]
