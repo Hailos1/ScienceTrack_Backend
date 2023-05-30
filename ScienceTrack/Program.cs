@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using ScienceTrack.Services;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Connections;
+using ScienceTrack.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,10 @@ builder.Services.AddSingleton<RandomService>();
 builder.Services.AddScoped<GameService>();
 builder.Services.AddTransient<AuthorizationService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 var app = builder.Build();
 
@@ -35,6 +41,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<GameHub>("/messengerHub", options =>
+{
+    options.Transports = HttpTransportType.WebSockets;
+    options.WebSockets.CloseTimeout = new TimeSpan(24, 0, 0);
+});
 
 app.UseCors(x => x.AllowCredentials()
             .WithExposedHeaders("TotalPages")
