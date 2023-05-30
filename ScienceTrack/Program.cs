@@ -16,10 +16,10 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<Repository>();
+builder.Services.AddSingleton<Repository>();
 builder.Services.AddSingleton<RandomService>();
-builder.Services.AddScoped<GameService>();
-builder.Services.AddTransient<AuthorizationService>();
+builder.Services.AddSingleton<GameService>();
+builder.Services.AddSingleton<AuthorizationService>();
 builder.Services.AddSingleton<RoundTimerService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddSignalR(options =>
