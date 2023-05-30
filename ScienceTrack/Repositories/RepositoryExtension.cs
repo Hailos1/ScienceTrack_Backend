@@ -13,7 +13,7 @@ namespace ScienceTrack.Repositories
 
         public static async Task<RoundUser> Get(this GenericRepository<RoundUser> repository, int roundId, int userId)
         {
-            return await repository.context.RoundUsers.FirstAsync(x => x.Round == roundId && x.User == userId);
+            return await repository.context.RoundUsers.Include(x => x.LocalEventNavigation).FirstAsync(x => x.Round == roundId && x.User == userId);
         }
 
         public static async Task<IEnumerable<RoundUser>> GetList(this GenericRepository<RoundUser> repository, int roundId)

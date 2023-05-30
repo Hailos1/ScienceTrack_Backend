@@ -88,10 +88,10 @@ namespace ScienceTrack.Services
                 .Take(pageSize);
         }
 
-        public async Task<LocalEvent> GetUserLocalEvent(int roundId, string userName)
+        public async Task<LocalEventDTO> GetUserLocalEvent(int roundId, string userName)
         {
             var userId = (await repository.Users.Get(userName)).Id;
-            return (await repository.RoundUsers.Get(roundId, userId)).LocalEventNavigation;
+            return new LocalEventDTO((await repository.RoundUsers.Get(roundId, userId)).LocalEventNavigation);
         }
 
         public async Task<Round> NextRound(int gameId, int oldRoundId)
