@@ -81,13 +81,6 @@ namespace ScienceTrack.Services
             UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", newRound));
             realRoundTimers[gameId].Start();
         }
-        private static async void sendNewRound(int gameId, Round round, IHubCallerClients clients, Dictionary<string, string>  UsersConnections)
-        {
-            await using var rep = new ScienceTrackContext();
-            //UsersConnections.Select(x => clients.Client(x.Value).SendAsync("NewRound", rep.RoundUsers.FirstOrDefault(k => k.User == rep.Users.First(u => u.UserName == x.Key).Id).LocalEvent));
-            //await clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("NewRound", round);
-            //await clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round);
-        }
 
         private static async void sendCurrentTime(int gameId, int time, IHubCallerClients clients, Dictionary<string, string> UsersConnections)
         {
