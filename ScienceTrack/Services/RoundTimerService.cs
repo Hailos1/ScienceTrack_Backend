@@ -1,4 +1,5 @@
 ﻿using ScienceTrack.Repositories;
+using ScienceTrack.DTO;
 using ScienceTrack.Models;
 using System.Timers;
 using Microsoft.AspNetCore.SignalR;
@@ -61,7 +62,7 @@ namespace ScienceTrack.Services
             realRoundTimers[gameId].Stop();
             startRoundTimers.Remove(gameId);
             startRoundTimers.Add(gameId, 1);
-            realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(60000 * 2));
+            realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(50000 * 2));
             if (newRound == null) 
             {
                 realRoundTimers[gameId].Dispose();
@@ -73,7 +74,7 @@ namespace ScienceTrack.Services
             {
                 return;
             }
-            UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", newRound));
+            UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", new RoundDTO(newRound.Result)));
             realRoundTimers[gameId].Start();
         }
     }
