@@ -16,13 +16,13 @@ namespace ScienceTrack.Hubs
         { 
             this.repository = repository;
             this.gameService = gameService;           
-            this.timeService = new RoundTimerService(repository, gameService, sendNewRound, sendCurrentTime);
+            this.timeService = new RoundTimerService(repository, gameService);
         }
         [Authorize(Roles = "admin")]
         public async Task StartGame(int gameId)
         {
             var startRound = await gameService.StartGame(gameId);            
-            timeService.StartTimer(gameId);
+            timeService.StartTimer(gameId, Clients);
             await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", startRound);
         }
         [Authorize]
@@ -34,16 +34,6 @@ namespace ScienceTrack.Hubs
         public async Task RemoveFromGroup(string gameId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
-        }
-
-        private async void sendNewRound(int gameId, Round round)
-        {
-            await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round, gameService.GetUserLocalEvent(round.Id, Context.UserIdentifier));
-        }
-
-        private async void sendCurrentTime(int gameId, int time)
-        {
-            await Clients.Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
-        }
+        }        
     }
 }
