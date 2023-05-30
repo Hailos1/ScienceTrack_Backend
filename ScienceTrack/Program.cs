@@ -42,7 +42,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<GameHub>("/messengerHub", options =>
+app.MapHub<GameHub>("/GameHub", options =>
 {
     options.Transports = HttpTransportType.WebSockets;
     options.WebSockets.CloseTimeout = new TimeSpan(24, 0, 0);
