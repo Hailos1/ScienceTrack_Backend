@@ -2,6 +2,7 @@
 using ScienceTrack.Models;
 using System.Timers;
 using Microsoft.AspNetCore.SignalR;
+using System.Threading;
 
 namespace ScienceTrack.Services
 {
@@ -9,17 +10,11 @@ namespace ScienceTrack.Services
     {
         private Dictionary<int, System.Timers.Timer> realRoundTimers;
         private Dictionary<int, int> startRoundTimers;
-        //private Repository repository = new Repository();
-        //private RandomService randomService = new RandomService();
-        //private GameService gameService;
-        //private Action<int, Round, IHubCallerClients, Dictionary<string, string>> roundCallback = sendNewRound;
-        private Action<int, int, IHubCallerClients, Dictionary<string, string>> timeCallback = sendCurrentTime;
         private Dictionary<string, string> UsersConnections = new Dictionary<string, string>();
         public IHubCallerClients? Clients { get; set; }
         
         public RoundTimerService()
         {
-            //gameService = new GameService(repository, randomService);
             realRoundTimers = new Dictionary<int, System.Timers.Timer>();
             startRoundTimers = new Dictionary<int, int>();
         }
@@ -50,7 +45,7 @@ namespace ScienceTrack.Services
         {
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
-            timeCallback(gameId, startRoundTimers[gameId], Clients, UsersConnections);
+            Clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
             if (startRoundTimers[gameId] >= 100)
             {
                 timer.Stop();
@@ -80,12 +75,6 @@ namespace ScienceTrack.Services
             }
             UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", newRound));
             realRoundTimers[gameId].Start();
-        }
-
-        private static async void sendCurrentTime(int gameId, int time, IHubCallerClients clients, Dictionary<string, string> UsersConnections)
-        {
-            //await clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("CurrentTime", time);
-            await clients.Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
         }
     }
 }
