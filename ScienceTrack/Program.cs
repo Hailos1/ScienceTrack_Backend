@@ -37,6 +37,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors(x => x.AllowCredentials()
+            .WithExposedHeaders("TotalPages")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .WithOrigins("http://localhost:3000"));
