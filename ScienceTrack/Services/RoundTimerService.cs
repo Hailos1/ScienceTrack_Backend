@@ -9,16 +9,16 @@ namespace ScienceTrack.Services
     {
         private Dictionary<int, System.Timers.Timer> realRoundTimers;
         private Dictionary<int, int> startRoundTimers;
-        private Repository repository;
+        private Repository repository = new Repository();
+        private RandomService randomService = new RandomService();
         private GameService gameService;
         private Action<int, Round, IHubCallerClients> roundCallback = sendNewRound;
         private Action<int, int, IHubCallerClients> timeCallback = sendCurrentTime;
-        public IHubCallerClients Clients { get; set; }
+        public IHubCallerClients? Clients { get; set; }
         
-        public RoundTimerService(Repository repository, GameService gameService)
+        public RoundTimerService()
         {
-            this.repository = repository;
-            this.gameService = gameService;
+            gameService = new GameService(repository, randomService);
             realRoundTimers = new Dictionary<int, System.Timers.Timer>();
             startRoundTimers = new Dictionary<int, int>();
         }
