@@ -79,7 +79,7 @@ namespace ScienceTrack.Services
 
         public async Task<IEnumerable<LocalSolution>> GetSolutions(HttpResponse response, int pageNum = 1, int pageSize = 10)
         {
-            var solutions = await repository.LocalSolutions.GetList();
+            var solutions = (await repository.LocalSolutions.GetList()).OrderBy(x => x.Id).Skip(1);
             var count = solutions.Count();
             var totalPages = (int)Math.Ceiling(count / (double)pageSize);
             response.Headers.Add("TotalPages", $"{totalPages}");
