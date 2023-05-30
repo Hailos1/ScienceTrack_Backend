@@ -59,22 +59,22 @@ namespace ScienceTrack.Services
             int gameId = obj;
             var oldRound = new Repository().Rounds.GetList(gameId).Result.Last();
             var newRound = new GameService(new Repository(), new RandomService()).NextRound(gameId, oldRound.Id);
-            realRoundTimers[gameId].Stop();
-            startRoundTimers.Remove(gameId);
-            startRoundTimers.Add(gameId, 1);
-            realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(50000 * 2));
-            if (newRound == null) 
+            if (new Repository().Rounds.GetList(gameId).Result.Count() == 50)
+            {
+                return;
+            }
+            if (newRound == null)
             {
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
                 UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", null));
             }
-            if (new Repository().Rounds.GetList(gameId).Result.Count() == 50)
-            {
-                return;
-            }
             UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", new RoundDTO(newRound.Result)));
+            realRoundTimers[gameId].Stop();
+            startRoundTimers.Remove(gameId);
+            startRoundTimers.Add(gameId, 1);
+            realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(50000 * 2));       
             realRoundTimers[gameId].Start();
         }
     }
