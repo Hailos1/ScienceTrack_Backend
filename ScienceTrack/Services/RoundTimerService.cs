@@ -9,16 +9,16 @@ namespace ScienceTrack.Services
     {
         private Dictionary<int, System.Timers.Timer> realRoundTimers;
         private Dictionary<int, int> startRoundTimers;
-        private Repository repository = new Repository();
-        private RandomService randomService = new RandomService();
-        private GameService gameService;
+        //private Repository repository = new Repository();
+        //private RandomService randomService = new RandomService();
+        //private GameService gameService;
         private Action<int, Round, IHubCallerClients> roundCallback = sendNewRound;
         private Action<int, int, IHubCallerClients> timeCallback = sendCurrentTime;
         public IHubCallerClients? Clients { get; set; }
         
         public RoundTimerService()
         {
-            gameService = new GameService(repository, randomService);
+            //gameService = new GameService(repository, randomService);
             realRoundTimers = new Dictionary<int, System.Timers.Timer>();
             startRoundTimers = new Dictionary<int, int>();
         }
@@ -29,10 +29,10 @@ namespace ScienceTrack.Services
             {
                 return;
             }
-            realRoundTimers.Add(gameId, new System.Timers.Timer(new TimeSpan(60000 * 2)));
+            realRoundTimers.Add(gameId, new System.Timers.Timer(new TimeSpan(50000 * 2)));
             realRoundTimers[gameId].Interval = 1000;
             realRoundTimers[gameId].Elapsed += new ElapsedEventHandler((sender, args) => TickRoundTimer(sender, args, gameId));
-            startRoundTimers.Add(gameId, 0);
+            startRoundTimers.Add(gameId, 1);
             realRoundTimers[gameId].Start();           
         }
 
@@ -51,11 +51,11 @@ namespace ScienceTrack.Services
         private void LastTickRoundTimer(int obj)
         {
             int gameId = obj;
-            var oldRound = repository.Rounds.GetList(gameId).Result.Last();
-            var newRound = gameService.NextRound(gameId, oldRound.Id);
+            var oldRound = new Repository().Rounds.GetList(gameId).Result.Last();
+            var newRound = new GameService(new Repository(), new RandomService()).NextRound(gameId, oldRound.Id);
             realRoundTimers[gameId].Stop();
             startRoundTimers.Remove(gameId);
-            startRoundTimers.Add(gameId, 0);
+            startRoundTimers.Add(gameId, 1);
             realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(60000 * 2));
             if (newRound == null) 
             {
@@ -64,7 +64,7 @@ namespace ScienceTrack.Services
                 startRoundTimers.Remove(gameId);
                 roundCallback(gameId, null, Clients);
             }
-            if (repository.Rounds.GetList(gameId).Result.Count() == 50)
+            if (new Repository().Rounds.GetList(gameId).Result.Count() == 50)
             {
                 return;
             }
