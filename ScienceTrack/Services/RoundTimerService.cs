@@ -25,6 +25,10 @@ namespace ScienceTrack.Services
 
         public void StartTimer(int gameId) 
         {
+            if (realRoundTimers.ContainsKey(gameId))
+            {
+                return;
+            }
             realRoundTimers.Add(gameId, new System.Timers.Timer(new TimeSpan(60000 * 2)));
             realRoundTimers[gameId].Interval = 1000;
             realRoundTimers[gameId].Elapsed += new ElapsedEventHandler((sender, args) => TickRoundTimer(sender, args, gameId));
