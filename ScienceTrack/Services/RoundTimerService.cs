@@ -12,7 +12,7 @@ namespace ScienceTrack.Services
         //private Repository repository = new Repository();
         //private RandomService randomService = new RandomService();
         //private GameService gameService;
-        private Action<int, Round, IHubCallerClients, Dictionary<string, string>> roundCallback = sendNewRound;
+        //private Action<int, Round, IHubCallerClients, Dictionary<string, string>> roundCallback = sendNewRound;
         private Action<int, int, IHubCallerClients, Dictionary<string, string>> timeCallback = sendCurrentTime;
         private Dictionary<string, string> UsersConnections = new Dictionary<string, string>();
         public IHubCallerClients? Clients { get; set; }
@@ -72,27 +72,27 @@ namespace ScienceTrack.Services
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
-                roundCallback(gameId, null, Clients, UsersConnections);
+                UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", null));
             }
             if (new Repository().Rounds.GetList(gameId).Result.Count() == 50)
             {
                 return;
             }
-            roundCallback(gameId, newRound!.Result, Clients, UsersConnections);
+            UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", newRound));
             realRoundTimers[gameId].Start();
         }
         private static async void sendNewRound(int gameId, Round round, IHubCallerClients clients, Dictionary<string, string>  UsersConnections)
         {
             await using var rep = new ScienceTrackContext();
-            UsersConnections.Select(x => clients.Client(x.Value).SendAsync("NewRound", rep.RoundUsers.FirstOrDefault(k => k.User == rep.Users.First(u => u.UserName == x.Key).Id).LocalEvent));
+            //UsersConnections.Select(x => clients.Client(x.Value).SendAsync("NewRound", rep.RoundUsers.FirstOrDefault(k => k.User == rep.Users.First(u => u.UserName == x.Key).Id).LocalEvent));
             //await clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("NewRound", round);
             //await clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round);
         }
 
         private static async void sendCurrentTime(int gameId, int time, IHubCallerClients clients, Dictionary<string, string> UsersConnections)
         {
-            await clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("CurrentTime", time);
-            //await clients.Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
+            //await clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("CurrentTime", time);
+            await clients.Group(Convert.ToString(gameId)).SendAsync("CurrentTime", time);
         }
     }
 }
