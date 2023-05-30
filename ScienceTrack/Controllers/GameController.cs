@@ -82,7 +82,7 @@ namespace ScienceTrack.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetUserLocalEvent(int roundId, [FromForm] string userName)
+        public async Task<IActionResult> GetUserLocalEvent(int roundId, string userName)
         {
             return Ok(await game.GetUserLocalEvent(roundId, userName));
         }
