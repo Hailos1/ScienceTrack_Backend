@@ -88,6 +88,12 @@ namespace ScienceTrack.Services
                 .Take(pageSize);
         }
 
+        public async Task<LocalEvent> GetUserLocalEvent(int roundId, string userName)
+        {
+            var userId = (await repository.Users.Get(userName)).Id;
+            return (await repository.RoundUsers.Get(roundId, userId)).LocalEventNavigation;
+        }
+
         public async Task<Round> NextRound(int gameId, int oldRoundId)
         {
             if (repository.Rounds.GetList(gameId).Result.Count() < 50 && repository.Games.Get(gameId).Status != "finished")

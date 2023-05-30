@@ -25,5 +25,10 @@ namespace ScienceTrack.Repositories
         {
             return await repository.context.Rounds.Where(x => x.Game == gameId).ToListAsync();
         }
+
+        public static async Task<User> Get(this GenericRepository<User> repository, string userName)
+        {
+            return await repository.context.Users.FirstAsync(x => x.UserName == userName);
+        }
     }
 }

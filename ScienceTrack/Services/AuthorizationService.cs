@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ScienceTrack.Models;
 using ScienceTrack.Repositories;
 using System.Security.Claims;
@@ -45,7 +46,7 @@ namespace ScienceTrack.Services
         public async Task<User?> IsAuthorize(HttpContext context)
         {
             if (context.User.Claims.FirstOrDefault() == null) return null;
-            return repository.Users.GetList().Result.FirstOrDefault(x => x.UserName == context.User.Claims.First().Value);
+            return repository.Users.context.Users.Include(x => x.RoleNavigation).FirstOrDefault(x => x.UserName == context.User.Claims.First().Value);
         }
 
         public async Task<User?> Register(HttpContext context, string userName, string officialName, string password)

@@ -38,7 +38,7 @@ namespace ScienceTrack.Hubs
 
         private async void sendNewRound(int gameId, Round round)
         {
-            await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round);
+            await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", round, gameService.GetUserLocalEvent(round.Id, Context.UserIdentifier));
         }
 
         private async void sendCurrentTime(int gameId, int time)

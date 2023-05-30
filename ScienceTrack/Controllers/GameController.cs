@@ -79,5 +79,12 @@ namespace ScienceTrack.Controllers
         {
             return Ok( await game.GetSolutions(Response, pageNum, pageSize));
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserLocalEvent(int roundId, string userName)
+        {
+            return Ok(await game.GetUserLocalEvent(roundId, userName));
+        }
     }
 }
