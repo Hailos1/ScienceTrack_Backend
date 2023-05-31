@@ -96,7 +96,7 @@ namespace ScienceTrack.Services
 
         public async Task<Round> NextRound(int gameId, int oldRoundId)
         {
-            if (repository.Rounds.GetList(gameId).Result.Count() < 50 && repository.Games.Get(gameId).Status != "finished")
+            if (repository.Rounds.GetList(gameId).Result.Count() < 48 && repository.Games.Get(gameId).Status != "finished")
             {
                 var oldRound = repository.Rounds.Get(oldRoundId);
                 oldRound.Status = "finished";
@@ -120,6 +120,7 @@ namespace ScienceTrack.Services
             else
             {
                 repository.Games.Get(gameId).Status = "finished";
+                repository.Rounds.GetList(gameId).Result.Last().Status = "finished";
                 await repository.Games.Save();
                 return null;
             }
@@ -163,6 +164,7 @@ namespace ScienceTrack.Services
             {
                 User = x.User,
                 UserName = repository.Users.Get(x.User).UserName,
+                OfficialName = repository.Users.Get(x.User).OfficialName,
                 Game = gameId,
                 AdministrativeStatus = x.AdministrativeStatus.Value,
                 SocialStatus = x.SocialStatus.Value,

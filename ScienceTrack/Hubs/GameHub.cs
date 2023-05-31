@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using ScienceTrack.DTO;
 using ScienceTrack.Models;
 using ScienceTrack.Repositories;
 using ScienceTrack.Services;
@@ -24,13 +25,13 @@ namespace ScienceTrack.Hubs
             timeService.Clients = Clients;
             var startRound = await gameService.StartGame(gameId);            
             timeService.StartTimer(gameId);
-            await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", startRound);
+            await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", new RoundDTO(startRound));
         }
         [Authorize]
         public async Task AddToGroup(string gameId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
-            timeService.ChangeUserConnection(Context.UserIdentifier, Context.ConnectionId);
+            timeService.ChangeUserConnection(Context.UserIdentifier, Context.ConnectionId, Convert.ToInt32(gameId));
             timeService.Clients = Clients;
         }
         [Authorize]

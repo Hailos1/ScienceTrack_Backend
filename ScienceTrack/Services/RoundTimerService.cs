@@ -11,7 +11,7 @@ namespace ScienceTrack.Services
     {
         private Dictionary<int, System.Timers.Timer> realRoundTimers;
         private Dictionary<int, int> startRoundTimers;
-        private Dictionary<string, string> UsersConnections = new Dictionary<string, string>();
+        private Dictionary<int, Dictionary<string, string>> UsersConnections = new Dictionary<int, Dictionary<string, string>>();
         public IHubCallerClients? Clients { get; set; }
         
         public RoundTimerService()
@@ -20,13 +20,17 @@ namespace ScienceTrack.Services
             startRoundTimers = new Dictionary<int, int>();
         }
 
-        public void ChangeUserConnection(string userName, string connectionId)
+        public void ChangeUserConnection(string userName, string connectionId, int gameId)
         {
-            if (UsersConnections.ContainsKey(userName))
+            if (!UsersConnections.ContainsKey(gameId))
             {
-                UsersConnections[userName] = connectionId;
+                UsersConnections.Add(gameId, new Dictionary<string, string>());
             }
-            UsersConnections.Add(userName, connectionId);
+            if (UsersConnections[gameId].ContainsKey(userName))
+            {
+                UsersConnections[gameId][userName] = connectionId;
+            }
+            UsersConnections[gameId].Add(userName, connectionId);
         }
 
         public void StartTimer(int gameId) 
@@ -46,7 +50,7 @@ namespace ScienceTrack.Services
         {
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
-            Clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
+            Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
             if (startRoundTimers[gameId] >= 10)
             {
                 timer.Stop();
@@ -71,13 +75,13 @@ namespace ScienceTrack.Services
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
-                UsersConnections.Select(x => Clients.Client(x.Value).SendAsync("NewRound", null));
+                UsersConnections[gameId].Select(x => Clients.Client(x.Value).SendAsync("NewRound", null));
             }
             if (new Repository().Rounds.GetList(gameId).Result.Count() == 50)
             {
                 return;
             }
-            await Clients.Clients(UsersConnections.Select(x => x.Value)).SendAsync("NewRound", new RoundDTO(newRound));
+            await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", new RoundDTO(newRound));
             realRoundTimers[gameId].Start();
         }
     }
