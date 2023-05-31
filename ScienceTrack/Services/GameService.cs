@@ -176,5 +176,23 @@ namespace ScienceTrack.Services
             var game = await repository.Games.GetList();
             return game.Last();
         }
+
+        public async Task<RoundEventsStatus> GetPlayerRoundStatusEvents(int roundId, int userId)
+        {
+            var RoundUser = repository.RoundUsers.GetList(roundId).Result.FirstOrDefault(x => x.User == userId);
+            var Round = repository.Rounds.Get(roundId);
+            var GameUser = repository.GameUsers.GetGameUsers(Round.Game).Result.FirstOrDefault(x => x.User == userId);
+            var GlobalEvent = repository.GlobalEvents.Get(Round.GlobalEvent);
+            var LocalEvent = repository.LocalEvents.Get(RoundUser.LocalEvent);
+            var dto = new RoundEventsStatus()
+            {
+                SocialStatus = GameUser.SocialStatus,
+                FinanceStatus = GameUser.FinanceStatus,
+                AdministrativeStatus = GameUser.AdministrativeStatus,
+                GlobalEvent = new GlobalEventDTO(GlobalEvent),
+                LocalEvent = new LocalEventDTO(LocalEvent)
+            };
+            return dto;
+        }
     }
 }

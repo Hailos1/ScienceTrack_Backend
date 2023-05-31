@@ -86,5 +86,12 @@ namespace ScienceTrack.Controllers
         {
             return Ok(await game.GetUserLocalEvent(roundId, userName));
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetPlayerRoundStatusEvents(int roundId, int userId)
+        {
+            return Ok(await game.GetPlayerRoundStatusEvents(roundId, userId));
+        }
     }
 }
