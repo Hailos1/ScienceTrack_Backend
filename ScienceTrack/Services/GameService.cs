@@ -113,8 +113,7 @@ namespace ScienceTrack.Services
                     x.FinanceStatus += globalEvent.FinanceStatus;
                     x.AdministrativeStatus += globalEvent.AdministrativeStatus;
                 });
-                await repository.Rounds.Save();
-                await InitialRoundUsers(gameId, Convert.ToInt32(round.Id));
+                await repository.Rounds.Save();                
                 return round;
             }
             else
