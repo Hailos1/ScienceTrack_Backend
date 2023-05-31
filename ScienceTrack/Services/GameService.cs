@@ -113,6 +113,7 @@ namespace ScienceTrack.Services
                     x.FinanceStatus += globalEvent.FinanceStatus;
                     x.AdministrativeStatus += globalEvent.AdministrativeStatus;
                 });
+                await InitialRoundUsers(gameId, Convert.ToInt32(round.Id));
                 await repository.Rounds.Save();                
                 return round;
             }
@@ -149,9 +150,6 @@ namespace ScienceTrack.Services
                     Round = roundId,
                     User = x.User
                 });
-                x.SocialStatus += rd.SocialStatus;
-                x.FinanceStatus += rd.FinanceStatus;
-                x.AdministrativeStatus += x.AdministrativeStatus;
             }
             await repository.RoundUsers.Save();
         }
