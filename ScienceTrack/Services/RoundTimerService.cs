@@ -42,7 +42,7 @@ namespace ScienceTrack.Services
             realRoundTimers.Add(gameId, new System.Timers.Timer());
             realRoundTimers[gameId].Interval = 1000;
             realRoundTimers[gameId].Elapsed += new ElapsedEventHandler((sender, args) => TickRoundTimer(sender, args, gameId));
-            startRoundTimers.Add(gameId, 1);
+            startRoundTimers.Add(gameId, 0);
             realRoundTimers[gameId].Start();           
         }
 
@@ -65,7 +65,7 @@ namespace ScienceTrack.Services
             var newRound = new GameService(new Repository(), new RandomService()).NextRound(gameId, oldRound.Id).Result;
             realRoundTimers[gameId].Stop();
             startRoundTimers.Remove(gameId);
-            startRoundTimers.Add(gameId, 1);
+            startRoundTimers.Add(gameId, 0);
             realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(50000 * 2));
             realRoundTimers[gameId].Interval = 1000;
             realRoundTimers[gameId].Elapsed += new ElapsedEventHandler((sender, args) => TickRoundTimer(sender, args, gameId));

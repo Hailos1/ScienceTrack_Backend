@@ -168,7 +168,8 @@ namespace ScienceTrack.Services
                 Game = gameId,
                 AdministrativeStatus = x.AdministrativeStatus.Value,
                 SocialStatus = x.SocialStatus.Value,
-                FinanceStatus = x.FinanceStatus.Value
+                FinanceStatus = x.FinanceStatus.Value,
+                TotalScore = 3 * x.FinanceStatus.Value + 2 * x.SocialStatus.Value + x.AdministrativeStatus.Value
             });
             return gameUsers;
         }

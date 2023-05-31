@@ -12,5 +12,7 @@
         public int FinanceStatus { get; set; }
 
         public int AdministrativeStatus { get; set; }
+        
+        public int TotalScore { get; set; }
     }
 }
