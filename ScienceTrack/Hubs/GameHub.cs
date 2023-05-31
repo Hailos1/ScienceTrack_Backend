@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using ScienceTrack.DTO;
 using ScienceTrack.Models;
@@ -19,22 +21,28 @@ namespace ScienceTrack.Hubs
             this.gameService = gameService;           
             this.timeService = roundTimerService;
         }
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         public async Task StartGame(int gameId)
         {
-            timeService.Clients = Clients;
-            var startRound = await gameService.StartGame(gameId);            
-            timeService.StartTimer(gameId);
-            await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", new RoundDTO(startRound));
+            if (Context.User.IsInRole("admin"))
+            {
+                timeService.Clients = Clients;
+                var startRound = await gameService.StartGame(gameId);
+                timeService.StartTimer(gameId);
+                await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", new RoundDTO(startRound));
+            }
         }
-        [Authorize]
+        //[Authorize]
         public async Task AddToGroup(string gameId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
-            timeService.ChangeUserConnection(Context.UserIdentifier, Context.ConnectionId, Convert.ToInt32(gameId));
-            timeService.Clients = Clients;
+            if (Context.UserIdentifier != null)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+                timeService.ChangeUserConnection(Context.UserIdentifier, Context.ConnectionId, Convert.ToInt32(gameId));
+                timeService.Clients = Clients;
+            }
         }
-        [Authorize]
+        //[Authorize]
         public async Task RemoveFromGroup(string gameId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);

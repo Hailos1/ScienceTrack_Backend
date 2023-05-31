@@ -20,7 +20,7 @@ namespace ScienceTrack.DTO
             Game = round.Game;
             Status = round.Status;
             GlobalEvent = round.GlobalEvent;
-            Age = new Repository().Rounds.GetList(Game).Result.Count() + 18;
+            Age = new Repository().Rounds.GetList(Game).Result.Count() + 17;
         }
     }
 }
