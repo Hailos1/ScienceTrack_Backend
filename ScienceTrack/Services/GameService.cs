@@ -42,9 +42,9 @@ namespace ScienceTrack.Services
             }
             else
                 return null;
-            }
+        }
 
-            public async Task<Round> StartGame(int gameId)
+        public async Task<Round> StartGame(int gameId)
         {
             var game = repository.Games.Get(gameId);
             if (game.Status == "created")
@@ -113,8 +113,8 @@ namespace ScienceTrack.Services
                     x.FinanceStatus += globalEvent.FinanceStatus;
                     x.AdministrativeStatus += globalEvent.AdministrativeStatus;
                 });
+                await repository.Rounds.Save();
                 await InitialRoundUsers(gameId, Convert.ToInt32(round.Id));
-                await repository.Rounds.Save();                
                 return round;
             }
             else
@@ -150,6 +150,9 @@ namespace ScienceTrack.Services
                     Round = roundId,
                     User = x.User
                 });
+                x.SocialStatus += rd.SocialStatus;
+                x.FinanceStatus += rd.FinanceStatus;
+                x.AdministrativeStatus += rd.AdministrativeStatus;
             }
             await repository.RoundUsers.Save();
         }
