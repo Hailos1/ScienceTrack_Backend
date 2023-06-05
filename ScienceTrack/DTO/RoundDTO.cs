@@ -13,6 +13,9 @@ namespace ScienceTrack.DTO
 
         public int GlobalEvent { get; set; }
         public int Age { get; set; }
+        public int? Stage { get; set; }
+        public string? StageDisc { get; set; }
+        public string? Picture { get; set; } 
 
         public RoundDTO(Round round)
         {

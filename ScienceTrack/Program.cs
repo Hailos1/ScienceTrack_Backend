@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Connections;
 using ScienceTrack.Hubs;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,5 +55,20 @@ app.UseCors(x => x.AllowCredentials()
             .AllowAnyHeader()
             .AllowAnyMethod()
             .WithOrigins("http://localhost:3000"));
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "Files")),
+    RequestPath = "/Files",
+    OnPrepareResponse = (context) =>
+    {
+        // Disable caching of all static files.
+        context.Context.Response.Headers["Cache-Control"] = "no-cache, no-store";
+        context.Context.Response.Headers["Pragma"] = "no-cache";
+        context.Context.Response.Headers["Expires"] = "-1";
+        context.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+    }
+});
 
 app.Run();

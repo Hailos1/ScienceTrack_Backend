@@ -19,6 +19,7 @@ namespace ScienceTrack.Services
         {
             var game = new Game();
             game.Status = "created";
+            game.Stage = 1;
             game = repository.Games.Create(game);
             await repository.Games.Save();
             return game;
@@ -96,8 +97,10 @@ namespace ScienceTrack.Services
 
         public async Task<Round> NextRound(int gameId, int oldRoundId)
         {
-            if (repository.Rounds.GetList(gameId).Result.Count() < 48 && repository.Games.Get(gameId).Status != "finished")
+            var countRounds = repository.Rounds.GetList(gameId).Result.Count();
+            if (countRounds < 48 && repository.Games.Get(gameId).Status != "finished")
             {
+                repository.Games.Get(gameId).Stage = (int)Math.Ceiling(Convert.ToDouble(countRounds) / Convert.ToDouble(6));
                 var oldRound = repository.Rounds.Get(oldRoundId);
                 oldRound.Status = "finished";
                 var globalEvent = random.GetRandomGlobalEvent();

@@ -33,6 +33,7 @@ public partial class ScienceTrackContext : DbContext
     public virtual DbSet<RoundUser> RoundUsers { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Stage> Stages { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
@@ -46,6 +47,21 @@ public partial class ScienceTrackContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Stage).HasColumnName("stage");
+
+            entity.HasOne(d => d.StageNavigation).WithMany(p => p.Games)
+                .HasForeignKey(d => d.Stage)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Game_stage_fkey");
+        });
+
+        modelBuilder.Entity<Stage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("Stages_pkey");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Desc).HasColumnName("desc");
+            entity.Property(e => e.PicturePath).HasColumnName("picturePath");
         });
 
         modelBuilder.Entity<GameUser>(entity =>

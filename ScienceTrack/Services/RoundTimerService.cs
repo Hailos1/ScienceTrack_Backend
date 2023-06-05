@@ -81,7 +81,12 @@ namespace ScienceTrack.Services
             {
                 return;
             }
-            await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", new RoundDTO(newRound));
+            var dto = new RoundDTO(newRound);
+            var stage = new Repository().Stages.Get(new Repository().Games.Get(gameId).Stage.Value);
+            dto.Stage = stage.Id;
+            dto.StageDisc = stage.Desc;
+            dto.Picture = stage.PicturePath;
+            await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", dto);
             realRoundTimers[gameId].Start();
         }
     }

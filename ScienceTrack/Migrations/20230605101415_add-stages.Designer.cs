@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ScienceTrack;
@@ -11,9 +12,11 @@ using ScienceTrack;
 namespace ScienceTrack.Migrations
 {
     [DbContext(typeof(ScienceTrackContext))]
-    partial class ScienceTrackContextModelSnapshot : ModelSnapshot
+    [Migration("20230605101415_add-stages")]
+    partial class addstages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -293,14 +296,10 @@ namespace ScienceTrack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("desc");
 
-                    b.Property<string>("PicturePath")
-                        .HasColumnType("text")
-                        .HasColumnName("picturePath");
-
                     b.HasKey("Id")
                         .HasName("Stages_pkey");
 
-                    b.ToTable("Stages");
+                    b.ToTable("Stage");
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.User", b =>

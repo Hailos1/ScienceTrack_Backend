@@ -23,6 +23,18 @@ namespace ScienceTrack.Repositories
 
         private GenericRepository<User> users { get; set; }
         private GenericRepository<Role> roles { get; set; }
+        private GenericRepository<Stage> stages { get; set; }
+        public GenericRepository<Stage> Stages
+        {
+            get
+            {
+                if (this.stages == null)
+                {
+                    this.stages = new GenericRepository<Stage>(context);
+                }
+                return stages;
+            }
+        }
 
         public GenericRepository<Role> Roles
         {

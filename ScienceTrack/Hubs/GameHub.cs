@@ -21,7 +21,7 @@ namespace ScienceTrack.Hubs
             this.gameService = gameService;           
             this.timeService = roundTimerService;
         }
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin")]
         public async Task StartGame(int gameId)
         {
             if (Context.User.IsInRole("admin"))
@@ -29,10 +29,15 @@ namespace ScienceTrack.Hubs
                 timeService.Clients = Clients;
                 var startRound = await gameService.StartGame(gameId);
                 timeService.StartTimer(gameId);
-                await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", new RoundDTO(startRound));
+                var dto = new RoundDTO(startRound);
+                var stage = repository.Stages.Get(repository.Games.Get(startRound.Game).Stage.Value);
+                dto.Stage = stage.Id;
+                dto.StageDisc = stage.Desc;
+                dto.Picture = stage.PicturePath;
+                await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", dto);
             }
         }
-        //[Authorize]
+        [Authorize]
         public async Task AddToGroup(string gameId)
         {
             if (Context.UserIdentifier != null)
@@ -42,7 +47,7 @@ namespace ScienceTrack.Hubs
                 timeService.Clients = Clients;
             }
         }
-        //[Authorize]
+        [Authorize]
         public async Task RemoveFromGroup(string gameId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
