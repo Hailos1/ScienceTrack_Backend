@@ -66,7 +66,7 @@ namespace ScienceTrack.Services
             realRoundTimers[gameId].Stop();
             startRoundTimers.Remove(gameId);
             startRoundTimers.Add(gameId, 0);
-            realRoundTimers[gameId] = new System.Timers.Timer(new TimeSpan(50000 * 2));
+            realRoundTimers[gameId] = new System.Timers.Timer(50000 * 2);
             realRoundTimers[gameId].Interval = 1000;
             realRoundTimers[gameId].Elapsed += new ElapsedEventHandler((sender, args) => TickRoundTimer(sender, args, gameId));
 
