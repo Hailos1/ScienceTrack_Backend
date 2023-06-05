@@ -27,7 +27,7 @@ namespace ScienceTrack.Hubs
             {
                 timeService.Clients = Clients;
                 var startRound = await gameService.StartGame(gameId);
-                timeService.StartTimer(gameId);
+                await timeService.StartTimer(gameId);
                 var dto = new RoundDTO(startRound);
                 var stage = repository.Stages.Get(repository.Games.Get(startRound.Game).Stage.Value);
                 dto.Stage = stage.Id;

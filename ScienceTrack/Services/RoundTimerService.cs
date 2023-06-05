@@ -20,20 +20,16 @@ namespace ScienceTrack.Services
             startRoundTimers = new Dictionary<int, int>();
         }
 
-        public void ChangeUserConnection(string userName, string connectionId, int gameId)
+        public async Task ChangeUserConnection(string userName, string connectionId, int gameId)
         {
             if (!UsersConnections.ContainsKey(gameId))
             {
                 UsersConnections.Add(gameId, new Dictionary<string, string>());
             }
-            if (UsersConnections[gameId].ContainsKey(userName))
-            {
-                UsersConnections[gameId][userName] = connectionId;
-            }
-            UsersConnections[gameId].Add(userName, connectionId);
+            UsersConnections[gameId][userName] = connectionId;
         }
 
-        public void StartTimer(int gameId) 
+        public async Task StartTimer(int gameId) 
         {
             if (realRoundTimers.ContainsKey(gameId))
             {
@@ -46,11 +42,11 @@ namespace ScienceTrack.Services
             realRoundTimers[gameId].Start();           
         }
 
-        private void TickRoundTimer(object obj, ElapsedEventArgs e, int gameId)
+        private async Task TickRoundTimer(object obj, ElapsedEventArgs e, int gameId)
         {
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
-            Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
+            await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
             if (startRoundTimers[gameId] >= 10)
             {
                 timer.Stop();
@@ -58,7 +54,7 @@ namespace ScienceTrack.Services
             }
         }
 
-        private async void LastTickRoundTimer(int obj)
+        private async Task LastTickRoundTimer(int obj)
         {
             int gameId = obj;
             var oldRound = new Repository().Rounds.GetList(gameId).Result.Last();
