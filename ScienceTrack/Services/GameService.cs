@@ -41,8 +41,11 @@ namespace ScienceTrack.Services
                 await repository.GameUsers.Save();
                 return user;
             }
-            else
-                return null;
+            if (repository.GameUsers.GetGameUsers(gameId).Result.Select(x => x.User).Contains(userId))
+            {
+                return repository.GameUsers.GetGameUsers(gameId).Result.FirstOrDefault(x => x.User == userId);
+            }
+            return null;
         }
 
         public async Task<Round> StartGame(int gameId)
