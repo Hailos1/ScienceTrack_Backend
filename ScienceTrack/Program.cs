@@ -86,7 +86,7 @@ app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
            Path.Combine(builder.Environment.ContentRootPath, "Files")),
-    RequestPath = "/Files"
+    RequestPath = "/api/Files"
     //OnPrepareResponse = (context) =>
     //{
     //    // Disable caching of all static files.
