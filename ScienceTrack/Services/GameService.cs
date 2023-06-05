@@ -70,14 +70,18 @@ namespace ScienceTrack.Services
 
         public async Task<RoundUser> PlayerChoose(int roundId, int userId, int localSolution)
         {
+            
             var roundUser = await repository.RoundUsers.context.RoundUsers.FirstAsync(x => x.Round == roundId && x.User == userId);
-            var gameUser = await repository.GameUsers.context.GameUsers.FirstAsync(x => x.User == userId);
-            var ls = repository.LocalSolutions.Get(localSolution);
-            gameUser.SocialStatus += ls.SocialStatus;
-            gameUser.FinanceStatus += ls.FinanceStatus;
-            gameUser.AdministrativeStatus += ls.AdministrativeStatus;
-            roundUser.LocalSolution = localSolution;
-            await repository.RoundUsers.Save();
+            if (roundUser.LocalSolution != 0)
+            {
+                var gameUser = await repository.GameUsers.context.GameUsers.FirstAsync(x => x.User == userId);
+                var ls = repository.LocalSolutions.Get(localSolution);
+                gameUser.SocialStatus += ls.SocialStatus;
+                gameUser.FinanceStatus += ls.FinanceStatus;
+                gameUser.AdministrativeStatus += ls.AdministrativeStatus;
+                roundUser.LocalSolution = localSolution;
+                await repository.RoundUsers.Save();
+            }
             return roundUser;
         }
 
