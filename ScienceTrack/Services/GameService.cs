@@ -179,7 +179,7 @@ namespace ScienceTrack.Services
                 AdministrativeStatus = x.AdministrativeStatus.Value,
                 SocialStatus = x.SocialStatus.Value,
                 FinanceStatus = x.FinanceStatus.Value,
-                TotalScore = 3 * x.FinanceStatus.Value + 2 * x.SocialStatus.Value + x.AdministrativeStatus.Value
+                TotalScore = x.FinanceStatus.Value + x.SocialStatus.Value + x.AdministrativeStatus.Value
             });
             return gameUsers;
         }
