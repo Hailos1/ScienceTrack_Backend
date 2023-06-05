@@ -1,12 +1,11 @@
-using ScienceTrack.Models;
-using ScienceTrack.Repositories;
-using Microsoft.EntityFrameworkCore;
-using ScienceTrack.Services;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Connections;
-using ScienceTrack.Hubs;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+using ScienceTrack.Hubs;
+using ScienceTrack.Repositories;
+using ScienceTrack.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +21,30 @@ builder.Services.AddSingleton<RandomService>();
 builder.Services.AddScoped<GameService>();
 builder.Services.AddTransient<AuthorizationService>();
 builder.Services.AddSingleton<RoundTimerService>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+builder.Services.AddAuthorization();
+//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Authorization";
+        options.AccessDeniedPath = "/Authorization";
+    });
+builder.Services.AddCookiePolicy(options =>
+{
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "cors",
+                      policy =>
+                      {
+                          policy.WithExposedHeaders("TotalPages")
+                            .AllowCredentials()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .WithOrigins("http://localhost:3000");
+                      });
+});
 builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
@@ -36,7 +58,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+var options = new CookiePolicyOptions();
+options.MinimumSameSitePolicy = SameSiteMode.None;
+options.Secure = CookieSecurePolicy.None;
+app.UseCookiePolicy(options);
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -50,25 +75,20 @@ app.MapHub<GameHub>("/GameHub", options =>
     options.WebSockets.CloseTimeout = new TimeSpan(24, 0, 0);
 });
 
-app.UseCors(x => x.AllowCredentials()
-            .WithExposedHeaders("TotalPages")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .WithOrigins("http://localhost:3000"));
-
+app.UseCors("cors");
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
            Path.Combine(builder.Environment.ContentRootPath, "Files")),
-    RequestPath = "/Files",
-    OnPrepareResponse = (context) =>
-    {
-        // Disable caching of all static files.
-        context.Context.Response.Headers["Cache-Control"] = "no-cache, no-store";
-        context.Context.Response.Headers["Pragma"] = "no-cache";
-        context.Context.Response.Headers["Expires"] = "-1";
-        context.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-    }
+    RequestPath = "/Files"
+    //OnPrepareResponse = (context) =>
+    //{
+    //    // Disable caching of all static files.
+    //    context.Context.Response.Headers["Cache-Control"] = "no-cache, no-store";
+    //    context.Context.Response.Headers["Pragma"] = "no-cache";
+    //    context.Context.Response.Headers["Expires"] = "-1";
+    //    context.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+    //}
 });
 
 app.Run();
