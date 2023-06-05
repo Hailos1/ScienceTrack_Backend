@@ -71,11 +71,12 @@ namespace ScienceTrack.Services
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
-                UsersConnections[gameId].Select(x => Clients.Client(x.Value).SendAsync("NewRound", "end"));
+                await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", "end");
+                return;
             }
             if (new Repository().Rounds.GetList(gameId).Result.Count() == 48)
             {
-                return;
+                //return;
             }
             var dto = new RoundDTO(newRound);
             var stage = new Repository().Stages.Get(new Repository().Games.Get(gameId).Stage.Value);
