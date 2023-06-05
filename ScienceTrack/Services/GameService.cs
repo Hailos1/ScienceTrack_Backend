@@ -72,7 +72,7 @@ namespace ScienceTrack.Services
         {
             
             var roundUser = await repository.RoundUsers.context.RoundUsers.FirstAsync(x => x.Round == roundId && x.User == userId);
-            if (roundUser.LocalSolution != 0)
+            if (roundUser.LocalSolution == 0)
             {
                 var gameUser = await repository.GameUsers.context.GameUsers.FirstAsync(x => x.User == userId);
                 var ls = repository.LocalSolutions.Get(localSolution);
