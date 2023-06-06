@@ -27,6 +27,10 @@ namespace ScienceTrack.Services
 
         public async Task<GameUser> AddUser(int gameId, int userId)
         {
+            if (repository.GameUsers.GetGameUsers(gameId).Result.Select(x => x.User).Contains(userId))
+            {
+                return repository.GameUsers.GetGameUsers(gameId).Result.FirstOrDefault(x => x.User == userId);
+            }
             if (repository.Games.Get(gameId).Status == "created")
             {
                 var gameUser = new GameUser()
@@ -40,11 +44,7 @@ namespace ScienceTrack.Services
                 var user = repository.GameUsers.Create(gameUser);
                 await repository.GameUsers.Save();
                 return user;
-            }
-            if (repository.GameUsers.GetGameUsers(gameId).Result.Select(x => x.User).Contains(userId))
-            {
-                return repository.GameUsers.GetGameUsers(gameId).Result.FirstOrDefault(x => x.User == userId);
-            }
+            }            
             return null;
         }
 
@@ -69,12 +69,12 @@ namespace ScienceTrack.Services
         }
 
         public async Task<RoundUser> PlayerChoose(int roundId, int userId, int localSolution)
-        {
-            
+        {            
             var roundUser = await repository.RoundUsers.context.RoundUsers.FirstAsync(x => x.Round == roundId && x.User == userId);
             if (roundUser.LocalSolution == 0)
             {
-                var gameUser = await repository.GameUsers.context.GameUsers.FirstAsync(x => x.User == userId);
+                
+                var gameUser = await repository.GameUsers.context.GameUsers.FirstAsync(x => x.User == userId && x.Game == repository.Rounds.Get(roundUser.Round).Game);
                 var ls = repository.LocalSolutions.Get(localSolution);
                 gameUser.SocialStatus += ls.SocialStatus;
                 gameUser.FinanceStatus += ls.FinanceStatus;

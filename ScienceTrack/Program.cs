@@ -25,13 +25,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Authorization";
-        options.AccessDeniedPath = "/Authorization";
+        options.LoginPath = "/";
+        options.AccessDeniedPath = "/";
     });
-builder.Services.AddCookiePolicy(options =>
-{
-    options.MinimumSameSitePolicy = SameSiteMode.None;
-});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "cors",
@@ -61,13 +57,7 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = "api/swagger";
     });
 }
-var result = new CookiePolicyOptions
-{
-    Secure = CookieSecurePolicy.None,
-    HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
-    MinimumSameSitePolicy = SameSiteMode.None,
-};
-app.UseCookiePolicy(result);
+app.UseCookiePolicy();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

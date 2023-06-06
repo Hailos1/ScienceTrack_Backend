@@ -47,7 +47,7 @@ namespace ScienceTrack.Services
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
             await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
-            if (startRoundTimers[gameId] >= 10)
+            if (startRoundTimers[gameId] >= 100)
             {
                 timer.Stop();
                 LastTickRoundTimer(gameId);
