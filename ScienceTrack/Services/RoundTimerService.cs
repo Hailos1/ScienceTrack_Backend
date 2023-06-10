@@ -13,11 +13,13 @@ namespace ScienceTrack.Services
         private Dictionary<int, int> startRoundTimers;
         private Dictionary<int, Dictionary<string, string>> UsersConnections = new Dictionary<int, Dictionary<string, string>>();
         public IHubCallerClients? Clients { get; set; }
+        private IConfiguration appConfig { get; set; }
         
-        public RoundTimerService()
+        public RoundTimerService(IConfiguration appConfig)
         {
             realRoundTimers = new Dictionary<int, System.Timers.Timer>();
             startRoundTimers = new Dictionary<int, int>();
+            this.appConfig = appConfig;
         }
 
         public async Task ChangeUserConnection(string userName, string connectionId, int gameId)
@@ -47,7 +49,7 @@ namespace ScienceTrack.Services
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
             await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
-            if (startRoundTimers[gameId] >= 100)
+            if (startRoundTimers[gameId] >= Convert.ToInt32(appConfig["GameData:roundDuration"]))
             {
                 timer.Stop();
                 LastTickRoundTimer(gameId);
@@ -58,7 +60,7 @@ namespace ScienceTrack.Services
         {
             int gameId = obj;
             var oldRound = new Repository().Rounds.GetList(gameId).Result.Last();
-            var newRound = new GameService(new Repository(), new RandomService()).NextRound(gameId, oldRound.Id).Result;
+            var newRound = new GameService(new Repository(), new RandomService(), appConfig).NextRound(gameId, oldRound.Id).Result;
             realRoundTimers[gameId].Stop();
             startRoundTimers.Remove(gameId);
             startRoundTimers.Add(gameId, 0);
@@ -74,7 +76,7 @@ namespace ScienceTrack.Services
                 await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", "end");
                 return;
             }
-            if (new Repository().Rounds.GetList(gameId).Result.Count() == 48)
+            if (new Repository().Rounds.GetList(gameId).Result.Count() == Convert.ToInt32(appConfig["GameData:countRounds"]))
             {
                 //return;
             }

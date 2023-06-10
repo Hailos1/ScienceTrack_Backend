@@ -75,9 +75,9 @@ namespace ScienceTrack.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetSolutions(int pageNum, int pageSize)
+        public async Task<IActionResult> GetSolutions(int stage, int pageNum, int pageSize)
         {
-            return Ok( await game.GetSolutions(Response, pageNum, pageSize));
+            return Ok( await game.GetSolutions(Response, stage, pageNum, pageSize));
         }
 
         [HttpGet]

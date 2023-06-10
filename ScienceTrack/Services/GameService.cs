@@ -9,8 +9,10 @@ namespace ScienceTrack.Services
     {
         private Repository repository;
         private RandomService random;
-        public GameService(Repository repository, RandomService random)
+        private IConfiguration appConfig;
+        public GameService(Repository repository, RandomService random, IConfiguration appConfig)
         {
+            this.appConfig = appConfig;
             this.random = random;
             this.repository = repository;
         }
@@ -85,9 +87,9 @@ namespace ScienceTrack.Services
             return roundUser;
         }
 
-        public async Task<IEnumerable<LocalSolution>> GetSolutions(HttpResponse response, int pageNum = 1, int pageSize = 10)
+        public async Task<IEnumerable<LocalSolution>> GetSolutions(HttpResponse response, int stage, int pageNum = 1, int pageSize = 10)
         {
-            var solutions = (await repository.LocalSolutions.GetList()).OrderBy(x => x.Id).Skip(1);
+            var solutions = (await repository.LocalSolutions.GetList()).OrderBy(x => x.Id).Skip(1).Where(x => x.Stage == stage);
             var count = solutions.Count();
             var totalPages = (int)Math.Ceiling(count / (double)pageSize);
             response.Headers.Add("TotalPages", $"{totalPages}");
@@ -104,10 +106,11 @@ namespace ScienceTrack.Services
 
         public async Task<Round> NextRound(int gameId, int oldRoundId)
         {
+            var maxRounds = Convert.ToInt32(appConfig["GameData:countRounds"]);
             var countRounds = repository.Rounds.GetList(gameId).Result.Count();
-            if (countRounds < 48 && repository.Games.Get(gameId).Status != "finished")
+            if (countRounds < maxRounds && repository.Games.Get(gameId).Status != "finished")
             {
-                repository.Games.Get(gameId).Stage = (int)Math.Ceiling(Convert.ToDouble(countRounds) / Convert.ToDouble(6));
+                repository.Games.Get(gameId).Stage = (int)Math.Ceiling(Convert.ToDouble(countRounds) / Convert.ToDouble(appConfig["GameData:stageDuration"]));
                 var oldRound = repository.Rounds.Get(oldRoundId);
                 oldRound.Status = "finished";
                 var globalEvent = random.GetRandomGlobalEvent();
@@ -180,7 +183,7 @@ namespace ScienceTrack.Services
                 SocialStatus = x.SocialStatus.Value,
                 FinanceStatus = x.FinanceStatus.Value,
                 TotalScore = x.FinanceStatus.Value + x.SocialStatus.Value + x.AdministrativeStatus.Value
-            });
+            }).OrderByDescending(x => x.TotalScore);
             return gameUsers;
         }
 
