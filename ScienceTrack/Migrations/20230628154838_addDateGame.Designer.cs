@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ScienceTrack;
@@ -11,9 +12,10 @@ using ScienceTrack;
 namespace ScienceTrack.Migrations
 {
     [DbContext(typeof(ScienceTrackContext))]
-    partial class ScienceTrackContextModelSnapshot : ModelSnapshot
+    [Migration("20230628154838_addDateGame")]
+    partial class addDateGame
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,8 +34,7 @@ namespace ScienceTrack.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("Date")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("Stage")
                         .HasColumnType("integer")

@@ -54,6 +54,7 @@ public partial class ScienceTrackContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.Stage).HasColumnName("stage");
+            entity.Property(e => e.Date).HasColumnName("date");
 
             entity.HasOne(d => d.StageNavigation).WithMany(p => p.Games)
                 .HasForeignKey(d => d.Stage)

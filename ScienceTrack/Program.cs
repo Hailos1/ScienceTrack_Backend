@@ -18,6 +18,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<Repository>();
 builder.Services.AddSingleton<RandomService>();
 builder.Services.AddScoped<GameService>();
+builder.Services.AddScoped<ArchiveService>();
 builder.Services.AddTransient<AuthorizationService>();
 builder.Services.AddSingleton<RoundTimerService>();
 builder.Services.AddAuthorization();

@@ -22,6 +22,7 @@ namespace ScienceTrack.Services
             var game = new Game();
             game.Status = "created";
             game.Stage = 1;
+            game.Date = DateTime.UtcNow;
             game = repository.Games.Create(game);
             await repository.Games.Save();
             return game;
