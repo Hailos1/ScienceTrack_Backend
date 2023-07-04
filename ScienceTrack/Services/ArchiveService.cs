@@ -21,7 +21,7 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize).OrderByDescending(game => game.Id);
         }
 
         public async Task<IEnumerable<Game>> GetPendingGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
@@ -32,7 +32,7 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize).OrderByDescending(game => game.Id);
         }
 
         public async Task<IEnumerable<Game>> GetArchivedGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
@@ -43,7 +43,7 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize).OrderByDescending(game=>game.Id);
         }
     }
 }
