@@ -22,7 +22,7 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count()));
+                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count())).OrderByDescending(game => game.Id);
         }
 
         public async Task<IEnumerable<GameDTO>> GetPendingGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
@@ -33,7 +33,7 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count()));
+                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count())).OrderByDescending(game => game.Id);
         }
 
         public async Task<IEnumerable<GameDTO>> GetArchivedGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
@@ -44,7 +44,7 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count()));
+                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count())).OrderByDescending(game => game.Id);
         }
     }
 }
