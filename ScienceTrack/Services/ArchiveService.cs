@@ -1,4 +1,5 @@
-﻿using ScienceTrack.Models;
+﻿using ScienceTrack.DTO;
+using ScienceTrack.Models;
 using ScienceTrack.Repositories;
 
 namespace ScienceTrack.Services
@@ -13,7 +14,7 @@ namespace ScienceTrack.Services
             this.repository = repository;
         }
 
-        public async Task<IEnumerable<Game>> GetActiveGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
+        public async Task<IEnumerable<GameDTO>> GetActiveGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
         {
             var games = (await repository.Games.GetList()).Where(x => x.Status == "started").OrderByDescending(x => x.Date);
             var count = games.Count();
@@ -21,10 +22,10 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count()));
         }
 
-        public async Task<IEnumerable<Game>> GetPendingGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
+        public async Task<IEnumerable<GameDTO>> GetPendingGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
         {
             var games = (await repository.Games.GetList()).Where(x => x.Status == "created").OrderByDescending(x => x.Date);
             var count = games.Count();
@@ -32,10 +33,10 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count()));
         }
 
-        public async Task<IEnumerable<Game>> GetArchivedGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
+        public async Task<IEnumerable<GameDTO>> GetArchivedGames(HttpResponse response, int pageNum = 1, int pageSize = 10)
         {
             var games = (await repository.Games.GetList()).Where(x => x.Status == "finished").OrderByDescending(x => x.Date);
             var count = games.Count();
@@ -43,7 +44,7 @@ namespace ScienceTrack.Services
             response.Headers.Add("TotalPages", $"{totalPages}");
             return games
                 .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count()));
         }
     }
 }
