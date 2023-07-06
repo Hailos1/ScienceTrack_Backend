@@ -34,7 +34,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "cors",
                       policy =>
                       {
-                          policy.WithExposedHeaders("TotalPages")
+                          policy.WithExposedHeaders("TotalPages", "TotalCount")
                             .AllowCredentials()
                                 .AllowAnyHeader()
                                 .AllowAnyMethod()

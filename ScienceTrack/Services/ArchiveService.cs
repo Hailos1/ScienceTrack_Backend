@@ -20,6 +20,7 @@ namespace ScienceTrack.Services
             var count = games.Count();
             var totalPages = (int)Math.Ceiling(count / (double)pageSize);
             response.Headers.Add("TotalPages", $"{totalPages}");
+            response.Headers.Add("TotalCount", $"{count}");
             return games
                 .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count())).OrderByDescending(game => game.Id);
@@ -31,6 +32,7 @@ namespace ScienceTrack.Services
             var count = games.Count();
             var totalPages = (int)Math.Ceiling(count / (double)pageSize);
             response.Headers.Add("TotalPages", $"{totalPages}");
+            response.Headers.Add("TotalCount", $"{count}");
             return games
                 .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count())).OrderByDescending(game => game.Id);
@@ -42,6 +44,7 @@ namespace ScienceTrack.Services
             var count = games.Count();
             var totalPages = (int)Math.Ceiling(count / (double)pageSize);
             response.Headers.Add("TotalPages", $"{totalPages}");
+            response.Headers.Add("TotalCount", $"{count}");
             return games
                 .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize).Select(x => new GameDTO(x, repository.GameUsers.GetGameUsers(x.Id).Result.Count())).OrderByDescending(game => game.Id);
