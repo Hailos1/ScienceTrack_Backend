@@ -22,6 +22,7 @@ namespace ScienceTrack.Services
             var game = new Game();
             game.Status = "created";
             game.Stage = 1;
+            game.Date = DateTime.UtcNow;
             game = repository.Games.Create(game);
             await repository.Games.Save();
             return game;
@@ -87,15 +88,11 @@ namespace ScienceTrack.Services
             return roundUser;
         }
 
-        public async Task<IEnumerable<LocalSolution>> GetSolutions(HttpResponse response, int stage, int pageNum = 1, int pageSize = 10)
+        public async Task<IEnumerable<LocalSolution>> GetSolutions(HttpResponse response, int stage)
         {
             var solutions = (await repository.LocalSolutions.GetList()).OrderBy(x => x.Id).Skip(1).Where(x => x.Stage == stage);
             var count = solutions.Count();
-            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
-            response.Headers.Add("TotalPages", $"{totalPages}");
-            return solutions
-                .Skip((pageNum - 1) * pageSize)
-                .Take(pageSize);
+            return solutions;
         }
 
         public async Task<LocalEventDTO> GetUserLocalEvent(int roundId, string userName)

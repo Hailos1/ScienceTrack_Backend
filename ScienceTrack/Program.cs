@@ -13,7 +13,8 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<Repository>();
 builder.Services.AddSingleton<RandomService>();
-builder.Services.AddTransient<GameService>();
+builder.Services.AddScoped<GameService>();
+builder.Services.AddScoped<ArchiveService>();
 builder.Services.AddTransient<AuthorizationService>();
 builder.Services.AddSingleton<RoundTimerService>();
 builder.Services.AddLogging();
@@ -29,7 +30,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "cors",
                       policy =>
                       {
-                          policy.WithExposedHeaders("TotalPages")
+                          policy.WithExposedHeaders("TotalPages", "TotalCount")
                             .AllowCredentials()
                                 .AllowAnyHeader()
                                 .AllowAnyMethod()
