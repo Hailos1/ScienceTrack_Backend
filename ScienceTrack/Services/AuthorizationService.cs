@@ -11,9 +11,11 @@ namespace ScienceTrack.Services
     public class AuthorizationService
     {
         private Repository repository;
-        public AuthorizationService(Repository repository)
+        private ILogger logger;
+        public AuthorizationService(Repository repository, ILogger<AuthorizationService> logger)
         {
             this.repository = repository;
+            this.logger = logger;
         }
 
         public async Task<User?> Authorize(HttpContext context, string userName, string password)
@@ -33,6 +35,7 @@ namespace ScienceTrack.Services
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             await context.SignInAsync(claimsPrincipal, new AuthenticationProperties() { IssuedUtc = DateTime.UtcNow, ExpiresUtc = DateTime.UtcNow.AddMinutes(100), AllowRefresh = true });
+            logger.LogInformation("user: " + user.UserName + " was authorized");
             return user;
         }
 
@@ -64,9 +67,10 @@ namespace ScienceTrack.Services
                 user.PasswordHash = new PasswordHasher<User>().HashPassword(user, password);
                 repository.Users.Create(user);
                 await repository.Users.Save();
-
+                logger.LogInformation("user: " + user.UserName + " was registered");
                 return await Authorize(context, userName, password);
             }
+            logger.LogWarning("user is already existing");
             return null;
         }
     }

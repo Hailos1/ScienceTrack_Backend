@@ -44,7 +44,7 @@ namespace ScienceTrack.Migrations
 
                     b.HasIndex("Stage");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.GameUser", b =>
@@ -83,7 +83,7 @@ namespace ScienceTrack.Migrations
 
                     b.HasIndex("User");
 
-                    b.ToTable("GameUsers");
+                    b.ToTable("GameUsers", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.GlobalEvent", b =>
@@ -119,7 +119,7 @@ namespace ScienceTrack.Migrations
                     b.HasKey("Id")
                         .HasName("GlobalEvents_pkey");
 
-                    b.ToTable("GlobalEvents");
+                    b.ToTable("GlobalEvents", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.LocalEvent", b =>
@@ -155,7 +155,7 @@ namespace ScienceTrack.Migrations
                     b.HasKey("Id")
                         .HasName("LocalEvents_pkey");
 
-                    b.ToTable("LocalEvents");
+                    b.ToTable("LocalEvents", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.LocalSolution", b =>
@@ -193,7 +193,7 @@ namespace ScienceTrack.Migrations
 
                     b.HasIndex("Stage");
 
-                    b.ToTable("LocalSolutions");
+                    b.ToTable("LocalSolutions", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.Role", b =>
@@ -213,7 +213,7 @@ namespace ScienceTrack.Migrations
                     b.HasKey("Id")
                         .HasName("Roles_pkey");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.Round", b =>
@@ -244,7 +244,7 @@ namespace ScienceTrack.Migrations
 
                     b.HasIndex("GlobalEvent");
 
-                    b.ToTable("Rounds");
+                    b.ToTable("Rounds", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.RoundUser", b =>
@@ -283,7 +283,7 @@ namespace ScienceTrack.Migrations
 
                     b.HasIndex("User");
 
-                    b.ToTable("RoundUsers");
+                    b.ToTable("RoundUsers", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.Stage", b =>
@@ -306,7 +306,7 @@ namespace ScienceTrack.Migrations
                     b.HasKey("Id")
                         .HasName("Stages_pkey");
 
-                    b.ToTable("Stages");
+                    b.ToTable("Stages", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.User", b =>
@@ -342,7 +342,7 @@ namespace ScienceTrack.Migrations
 
                     b.HasIndex("Role");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ScienceTrack.Models.Game", b =>
