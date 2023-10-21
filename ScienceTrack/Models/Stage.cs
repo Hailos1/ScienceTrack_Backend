@@ -1,9 +1,12 @@
-﻿namespace ScienceTrack.Models
+﻿using System.Text.Json.Serialization;
+
+namespace ScienceTrack.Models
 {
     public class Stage
     {
         public int Id { get; set; }
-
+        [JsonIgnore]
+        public int RoundDuration { get; set; }
         public string? Desc { get; set; }
         public string? PicturePath { get; set; }
         public virtual ICollection<Game> Games { get; set; } = new List<Game>();

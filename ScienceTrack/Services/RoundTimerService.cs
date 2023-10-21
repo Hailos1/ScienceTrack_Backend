@@ -4,6 +4,7 @@ using ScienceTrack.Models;
 using System.Timers;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading;
+using Microsoft.EntityFrameworkCore;
 
 namespace ScienceTrack.Services
 {
@@ -11,6 +12,7 @@ namespace ScienceTrack.Services
     {
         private Dictionary<int, System.Timers.Timer> realRoundTimers;
         private Dictionary<int, int> startRoundTimers;
+        private Dictionary<int, int> gameCurrentRoundTime = new Dictionary<int, int>();
         private Dictionary<int, Dictionary<string, string>> UsersConnections = new Dictionary<int, Dictionary<string, string>>();
         public IHubCallerClients? Clients { get; set; }
         private IConfiguration appConfig { get; set; }
@@ -41,6 +43,7 @@ namespace ScienceTrack.Services
             realRoundTimers[gameId].Interval = 1000;
             realRoundTimers[gameId].Elapsed += new ElapsedEventHandler((sender, args) => TickRoundTimer(sender, args, gameId));
             startRoundTimers.Add(gameId, 0);
+            gameCurrentRoundTime[gameId] = new Repository().Games.GetQList().Include(x => x.StageNavigation).First(x => x.Id == gameId).StageNavigation.RoundDuration;
             realRoundTimers[gameId].Start();           
         }
 
@@ -49,7 +52,13 @@ namespace ScienceTrack.Services
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
             await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
-            if (startRoundTimers[gameId] >= Convert.ToInt32(appConfig["GameData:roundDuration"]))
+            var duration = gameCurrentRoundTime[gameId];
+            if (duration == 0) 
+            {
+                duration = 104;
+            }
+
+            if (startRoundTimers[gameId] >= duration)
             {
                 timer.Stop();
                 LastTickRoundTimer(gameId);
@@ -76,11 +85,16 @@ namespace ScienceTrack.Services
                 await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", "end");
                 return;
             }
+
+            gameCurrentRoundTime[gameId] = new Repository().Games.GetQList().Include(x => x.StageNavigation).First(x => x.Id == gameId).StageNavigation.RoundDuration;
+
             if (new Repository().Rounds.GetList(gameId).Result.Count() == Convert.ToInt32(appConfig["GameData:countRounds"]))
             {
                 //return;
             }
+
             var dto = new RoundDTO(newRound);
+            dto.RoundDuration = gameCurrentRoundTime[gameId];
             var stage = new Repository().Stages.Get(new Repository().Games.Get(gameId).Stage.Value);
             dto.Stage = stage.Id;
             dto.StageDisc = stage.Desc;

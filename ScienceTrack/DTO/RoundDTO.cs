@@ -8,7 +8,7 @@ namespace ScienceTrack.DTO
         public int Id { get; set; }
 
         public int Game { get; set; }
-
+        public int RoundDuration { get; set; }
         public string? Status { get; set; }
 
         public int GlobalEvent { get; set; }

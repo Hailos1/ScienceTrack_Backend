@@ -44,6 +44,12 @@ namespace ScienceTrack.Repositories
             return set;
         }
 
+        public IQueryable<TEntity> GetQList()
+        {
+            var set = dbSet;
+            return set;
+        }
+
         public Task Save()
         {
             return context.SaveChangesAsync();
