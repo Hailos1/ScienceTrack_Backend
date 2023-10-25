@@ -10,7 +10,6 @@ namespace ScienceTrack.DTO
         public int Game { get; set; }
         public int RoundDuration { get; set; }
         public string? Status { get; set; }
-
         public int GlobalEvent { get; set; }
         public int Age { get; set; }
         public int? Stage { get; set; }

@@ -31,7 +31,6 @@ namespace ScienceTrack.Services
                     new Claim(ClaimTypes.NameIdentifier, user.UserName),
                     new Claim(ClaimTypes.Role, repository.Roles.Get(user.Role.Value).RoleName.ToString())
                 };
-
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             await context.SignInAsync(claimsPrincipal, new AuthenticationProperties() { IssuedUtc = DateTime.UtcNow, ExpiresUtc = DateTime.UtcNow.AddMinutes(100), AllowRefresh = true });
