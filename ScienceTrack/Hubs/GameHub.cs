@@ -28,6 +28,7 @@ namespace ScienceTrack.Hubs
             dto.Stage = stage.Id;
             dto.StageDisc = stage.Desc;
             dto.Picture = stage.PicturePath;
+            dto.RoundDuration = stage.RoundDuration;
             await Clients.Group(Convert.ToString(gameId)).SendAsync("NewRound", dto);
         }
         [Authorize]

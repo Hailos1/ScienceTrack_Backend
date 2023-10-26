@@ -6,7 +6,6 @@ namespace ScienceTrack.DTO
     public class RoundDTO
     {
         public int Id { get; set; }
-
         public int Game { get; set; }
         public int RoundDuration { get; set; }
         public string? Status { get; set; }
