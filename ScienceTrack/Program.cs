@@ -16,6 +16,7 @@ builder.Services.AddSingleton<RandomService>();
 builder.Services.AddScoped<GameService>();
 builder.Services.AddScoped<ArchiveService>();
 builder.Services.AddTransient<AuthorizationService>();
+builder.Services.AddTransient<ImportService>();
 builder.Services.AddSingleton<RoundTimerService>();
 builder.Services.AddLogging();
 builder.Services.AddAuthorization();

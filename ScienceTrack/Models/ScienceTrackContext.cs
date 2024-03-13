@@ -204,6 +204,12 @@ public partial class ScienceTrackContext : DbContext
             entity.HasOne(d => d.RoleNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.Role)
                 .HasConstraintName("Users_role_fkey");
+
+            entity.HasMany(u => u.RoundUsers)
+                .WithOne(u => u.UserNavigation).OnDelete(DeleteBehavior.SetNull);
+            
+            entity.HasMany(u => u.GameUsers)
+                .WithOne(u => u.UserNavigation).OnDelete(DeleteBehavior.SetNull);
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -76,7 +76,7 @@ namespace ScienceTrack.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("socialStatus");
 
-                    b.Property<int>("User")
+                    b.Property<int?>("User")
                         .HasColumnType("integer")
                         .HasColumnName("user");
 
@@ -272,7 +272,7 @@ namespace ScienceTrack.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("round");
 
-                    b.Property<int>("User")
+                    b.Property<int?>("User")
                         .HasColumnType("integer")
                         .HasColumnName("user");
 
@@ -373,7 +373,7 @@ namespace ScienceTrack.Migrations
                     b.HasOne("ScienceTrack.Models.User", "UserNavigation")
                         .WithMany("GameUsers")
                         .HasForeignKey("User")
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("GameUsers_user_fkey");
 
                     b.Navigation("GameNavigation");
@@ -432,7 +432,7 @@ namespace ScienceTrack.Migrations
                     b.HasOne("ScienceTrack.Models.User", "UserNavigation")
                         .WithMany("RoundUsers")
                         .HasForeignKey("User")
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("RoundUsers_user_fkey");
 
                     b.Navigation("LocalEventNavigation");

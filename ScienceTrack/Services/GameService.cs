@@ -172,9 +172,9 @@ namespace ScienceTrack.Services
         {
             var gameUsers = (await repository.GameUsers.context.GameUsers.Where(x => x.Game == gameId).ToListAsync()).Select(x => new PlayerFinalScore()
             {
-                User = x.User,
-                UserName = repository.Users.Get(x.User).UserName,
-                OfficialName = repository.Users.Get(x.User).OfficialName,
+                User = x.User ?? 0,
+                UserName = x.User != null ? repository.Users.Get(x.User.Value).UserName : "Удалённый",
+                OfficialName = x.User != null ? repository.Users.Get(x.User.Value).OfficialName : "Удалённый",
                 Game = gameId,
                 AdministrativeStatus = x.AdministrativeStatus.Value,
                 SocialStatus = x.SocialStatus.Value,

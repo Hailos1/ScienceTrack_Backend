@@ -9,7 +9,7 @@ public partial class RoundUser
 
     public int Round { get; set; }
 
-    public int User { get; set; }
+    public int? User { get; set; }
 
     public int? LocalSolution { get; set; }
 

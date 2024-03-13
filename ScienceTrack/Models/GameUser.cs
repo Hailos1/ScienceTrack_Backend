@@ -9,7 +9,7 @@ public partial class GameUser
 
     public int Game { get; set; }
 
-    public int User { get; set; }
+    public int? User { get; set; }
 
     public int? SocialStatus { get; set; }
 
