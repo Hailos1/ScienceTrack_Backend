@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
 using ScienceTrack.Hubs;
 using ScienceTrack.Repositories;
 using ScienceTrack.Services;
