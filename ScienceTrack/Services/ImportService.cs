@@ -21,7 +21,7 @@ public class ImportService
         using var reader = new StreamReader(fileStream);
         while (await reader.ReadLineAsync() is { } row)
         {
-            var split = row.Split(';');
+            var split = row.Split(';',',');
                 
             var userName = split[0];
             var password = split[1];
