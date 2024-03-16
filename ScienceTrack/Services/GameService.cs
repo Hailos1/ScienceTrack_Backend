@@ -59,6 +59,7 @@ namespace ScienceTrack.Services
                 game.Status = "started";
                 var round = repository.Rounds.Create(new Round()
                 {
+                    Stage = game.Stage,
                     Game = gameId,
                     GlobalEvent = random.GetRandomGlobalEvent().Id,
                     Status = game.Status
@@ -90,7 +91,7 @@ namespace ScienceTrack.Services
 
         public async Task<IEnumerable<LocalSolution>> GetSolutions(HttpResponse response, int stage)
         {
-            var solutions = (await repository.LocalSolutions.GetList()).OrderBy(x => x.Id).Skip(1).Where(x => x.Stage == stage);
+            var solutions = (await repository.LocalSolutions.GetList()).OrderBy(x => x.Id).Skip(1).Where(x => x.Stage == stage || x.Stage == null);
             var count = solutions.Count();
             return solutions;
         }
@@ -115,6 +116,7 @@ namespace ScienceTrack.Services
                 {
                     Game = gameId,
                     GlobalEvent = globalEvent.Id,
+                    Stage = (int)Math.Ceiling(Convert.ToDouble(countRounds) / Convert.ToDouble(appConfig["GameData:stageDuration"])),
                     Status = "started"
                 });
                 repository.GameUsers.GetGameUsers(gameId).Result.AsParallel().ForAll(x =>
@@ -182,6 +184,56 @@ namespace ScienceTrack.Services
                 TotalScore = x.FinanceStatus.Value + x.SocialStatus.Value + x.AdministrativeStatus.Value
             }).OrderByDescending(x => x.TotalScore);
             return gameUsers;
+        }
+        
+        public async Task<IEnumerable<UserTableScoreDto>> GetUserGraph(int gameId, int userId, string? username = null)
+        {
+            var user = username != null ? await repository.Users.GetQList().FirstOrDefaultAsync(x => x.UserName == username)! : repository.Users.Get(userId);
+
+            var userRounds = await repository.RoundUsers.GetQList().Where(x => x.User == user!.Id && x.RoundNavigation.Game == gameId)
+                .Include(x => x.LocalSolutionNavigation)
+                .Include(x => x.UserNavigation)
+                .Include(x => x.RoundNavigation)
+                .ToListAsync();
+
+            var localSolutions = await repository.LocalSolutions.GetQList().ToListAsync();
+
+            var userTable = userRounds.Select(x =>
+            {
+                Console.WriteLine(x.LocalSolutionNavigation.Stage);
+                return new UserTableScoreDto()
+                {
+                    roundNumber = x.Round,
+                    username = x.UserNavigation.UserName,
+                    officialName = x.UserNavigation.OfficialName,
+                    administrativeUserChoose = x.LocalSolutionNavigation.AdministrativeStatus.Value,
+                    socialUserChoose = x.LocalSolutionNavigation.SocialStatus.Value,
+                    financeUserChoose = x.LocalSolutionNavigation.FinanceStatus.Value,
+                    
+                    stage = x.RoundNavigation.Stage != null ? x.RoundNavigation.Stage.Value : 0,
+
+                    adminisrativeMax = localSolutions
+                        .Where(l => l.Stage == x.RoundNavigation.Stage || l.Stage == 0)
+                        .Max(m => m.AdministrativeStatus.Value),
+
+                    socialMax = localSolutions
+                        .Where(l => l.Stage == x.RoundNavigation.Stage || l.Stage == 0)
+                        .Max(m => m.SocialStatus.Value),
+
+                    financeMax = localSolutions
+                        .Where(l => l.Stage == x.RoundNavigation.Stage || l.Stage == 0)
+                        .Max(m => m.FinanceStatus.Value),
+                };
+            });
+
+            var orderedQueryable = userTable.OrderBy(x => x.roundNumber).ToList();
+
+            for (var i = 1; i <= orderedQueryable.Count(); i++)
+            {
+                orderedQueryable[i-1].roundNumber = i;
+            }
+            
+            return orderedQueryable;
         }
 
         public async Task<Game> GetLastGame()

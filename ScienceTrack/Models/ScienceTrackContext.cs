@@ -159,6 +159,11 @@ public partial class ScienceTrackContext : DbContext
                 .HasForeignKey(d => d.GlobalEvent)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Rounds_globalEvent_fkey");
+
+            entity.HasOne(r => r.StageNavigation)
+                .WithMany(s => s.Rounds)
+                .HasForeignKey(f => f.Stage)
+                .HasConstraintName("Rounds_stage_fkey");
         });
 
         modelBuilder.Entity<RoundUser>(entity =>

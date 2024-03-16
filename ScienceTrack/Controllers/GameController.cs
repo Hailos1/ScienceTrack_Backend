@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ScienceTrack.Models;
-using ScienceTrack.Repositories;
 using ScienceTrack.Services;
 
 namespace ScienceTrack.Controllers
@@ -36,6 +33,13 @@ namespace ScienceTrack.Controllers
         public async Task<IActionResult> GetRoundUsers(int roundId)
         {
             return Ok(await game.GetRoundUsers(roundId));
+        }
+        
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserGraph(int gameId, int userId, string? username = null)
+        {
+            return Ok(await game.GetUserGraph(gameId, userId, username));
         }
 
         [HttpPost]
