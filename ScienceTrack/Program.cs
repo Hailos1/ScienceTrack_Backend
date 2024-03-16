@@ -5,10 +5,13 @@ using ScienceTrack.Hubs;
 using ScienceTrack.Repositories;
 using ScienceTrack.Services;
 using System.Text.Json.Serialization;
+using ScienceTrack;
+using ScienceTrack.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+builder.Services.AddDbContext<ScienceTrackContext>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<Repository>();
 builder.Services.AddSingleton<RandomService>();
@@ -42,6 +45,7 @@ builder.Services.AddSignalR(options =>
     options.EnableDetailedErrors = true;
 });
 var app = builder.Build();
+app.TryMigrate();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(c => c.RouteTemplate = "api/swagger/{documentname}/swagger.json");

@@ -94,7 +94,7 @@ namespace ScienceTrack.Services
             }
 
             var dto = new RoundDTO(newRound);
-            dto.RoundDuration = gameCurrentRoundTime[gameId];
+            dto.RoundDuration = gameCurrentRoundTime[gameId] == 0 ? 104 : gameCurrentRoundTime[gameId];
             var stage = new Repository().Stages.Get(new Repository().Games.Get(gameId).Stage.Value);
             dto.Stage = stage.Id;
             dto.StageDisc = stage.Desc;
