@@ -39,8 +39,7 @@ jobs:
     #     push: true
     #     outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=My multi-arch image
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+    - name: Download a single artifact
+      uses: actions/download-artifact@v4
       with:
-        name: MSIX Package
-        path: ./.github/workflows/AppPackages
+        name: output-log-file
