@@ -39,5 +39,8 @@ jobs:
     #     push: true
     #     outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=My multi-arch image
 
-    - name: Download a single artifact
-      uses: actions/download-artifact@v4
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4.3.1
+      with:
+        name: ScienceTrack
+        path: /home/runner/work/ScienceTrack_Backend/ScienceTrack_Backend/ScienceTrack/bin/Release/net8.0/publish/
