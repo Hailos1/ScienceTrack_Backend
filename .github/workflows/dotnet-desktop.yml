@@ -30,17 +30,17 @@ jobs:
     - name: Publish app for deploy
       run: dotnet publish --configuration Release --no-build
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-      with:
-        context: .
-        file: ./.github/workflows/Dockerfile
-        platforms: ${{ matrix.platforms }}
-        push: true
-        outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=My multi-arch image
+    # - name: Build and push Docker image
+    #   uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+    #   with:
+    #     context: .
+    #     file: ./.github/workflows/Dockerfile
+    #     platforms: ${{ matrix.platforms }}
+    #     push: true
+    #     outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=My multi-arch image
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: MSIX Package
-        path: ${{ env.Wap_Project_Directory }}\AppPackages
+        path: ./.github/workflows/AppPackages
