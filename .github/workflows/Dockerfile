@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 # Копируем проект и восстанавливаем зависимости
-COPY ScienceTrack.csproj .
+COPY ScienceTrack/ScienceTrack.csproj .
 RUN dotnet resotre
 
 # Копируем все файлы и собираем приложение
