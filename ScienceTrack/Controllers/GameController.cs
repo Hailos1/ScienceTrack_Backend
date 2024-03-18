@@ -6,14 +6,8 @@ namespace ScienceTrack.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class GameController : ControllerBase
+    public class GameController(GameService game) : ControllerBase
     {
-        private GameService game;
-        public GameController(GameService game) 
-        {
-            this.game = game;
-        }
-
         [HttpPost]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateGame()

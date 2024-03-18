@@ -13,24 +13,24 @@ namespace ScienceTrack.Services
         private Dictionary<int, System.Timers.Timer> realRoundTimers;
         private Dictionary<int, int> startRoundTimers;
         private Dictionary<int, int> gameCurrentRoundTime = new Dictionary<int, int>();
-        private Dictionary<int, Dictionary<string, string>> UsersConnections = new Dictionary<int, Dictionary<string, string>>();
+        private readonly Dictionary<int, Dictionary<string, string>> usersConnections = new Dictionary<int, Dictionary<string, string>>();
         public IHubCallerClients? Clients { get; set; }
-        private IConfiguration appConfig { get; set; }
+        private IConfiguration AppConfig { get; set; }
         
         public RoundTimerService(IConfiguration appConfig)
         {
             realRoundTimers = new Dictionary<int, System.Timers.Timer>();
             startRoundTimers = new Dictionary<int, int>();
-            this.appConfig = appConfig;
+            this.AppConfig = appConfig;
         }
 
         public async Task ChangeUserConnection(string userName, string connectionId, int gameId)
         {
-            if (!UsersConnections.ContainsKey(gameId))
+            if (!usersConnections.ContainsKey(gameId))
             {
-                UsersConnections.Add(gameId, new Dictionary<string, string>());
+                usersConnections.Add(gameId, new Dictionary<string, string>());
             }
-            UsersConnections[gameId][userName] = connectionId;
+            usersConnections[gameId][userName] = connectionId;
         }
 
         public async Task StartTimer(int gameId) 
@@ -51,7 +51,7 @@ namespace ScienceTrack.Services
         {
             var timer = (System.Timers.Timer)obj;
             startRoundTimers[gameId]++;
-            await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
+            await Clients.Clients(usersConnections[gameId].Select(x => x.Value)).SendAsync("CurrentTime", startRoundTimers[gameId]);
             var duration = gameCurrentRoundTime[gameId];
             if (duration == 0) 
             {
@@ -69,7 +69,7 @@ namespace ScienceTrack.Services
         {
             int gameId = obj;
             var oldRound = new Repository().Rounds.GetList(gameId).Result.Last();
-            var newRound = new GameService(new Repository(), new RandomService(), appConfig).NextRound(gameId, oldRound.Id).Result;
+            var newRound = new GameService(new Repository(), new RandomService(), AppConfig).NextRound(gameId, oldRound.Id).Result;
             realRoundTimers[gameId].Stop();
             startRoundTimers.Remove(gameId);
             startRoundTimers.Add(gameId, 0);
@@ -82,13 +82,13 @@ namespace ScienceTrack.Services
                 realRoundTimers[gameId].Dispose();
                 realRoundTimers.Remove(gameId);
                 startRoundTimers.Remove(gameId);
-                await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", "end");
+                await Clients.Clients(usersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", "end");
                 return;
             }
 
             gameCurrentRoundTime[gameId] = new Repository().Games.GetQList().Include(x => x.StageNavigation).First(x => x.Id == gameId).StageNavigation.RoundDuration;
 
-            if (new Repository().Rounds.GetList(gameId).Result.Count() == Convert.ToInt32(appConfig["GameData:countRounds"]))
+            if (new Repository().Rounds.GetList(gameId).Result.Count() == Convert.ToInt32(AppConfig["GameData:countRounds"]))
             {
                 //return;
             }
@@ -99,7 +99,7 @@ namespace ScienceTrack.Services
             dto.Stage = stage.Id;
             dto.StageDisc = stage.Desc;
             dto.Picture = stage.PicturePath;
-            await Clients.Clients(UsersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", dto);
+            await Clients.Clients(usersConnections[gameId].Select(x => x.Value)).SendAsync("NewRound", dto);
             realRoundTimers[gameId].Start();
         }
     }
