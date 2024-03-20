@@ -13,7 +13,7 @@ builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 builder.Services.AddDbContext<ScienceTrackContext>();
 builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<Repository>();
+builder.Services.AddScoped<Repository>();
 builder.Services.AddSingleton<RandomService>();
 builder.Services.AddScoped<GameService>();
 builder.Services.AddScoped<ArchiveService>();

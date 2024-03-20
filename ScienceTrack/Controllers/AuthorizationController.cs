@@ -38,7 +38,7 @@ namespace ScienceTrack.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] string userName, [FromForm] string officialName, [FromForm] string password)
         {
-            var user = await authorizationService.Register(HttpContext, userName, officialName, password);
+            var user = await authorizationService.Register(userName, officialName, password);
             if (user == null)
             {
                 return BadRequest("User already exists in the system");

@@ -37,7 +37,6 @@ namespace ScienceTrack.Services
             logger.LogInformation("user: " + user.UserName + " was authorized");
             return user;
         }
-
         public async Task<bool> Logout(HttpContext context)
         {
             await context.SignOutAsync();
@@ -51,7 +50,7 @@ namespace ScienceTrack.Services
             return repository.Users.context.Users.Include(x => x.RoleNavigation).FirstOrDefault(x => x.UserName == context.User.Claims.First().Value);
         }
 
-        public async Task<User?> Register(HttpContext context, string userName, string officialName, string password)
+        public async Task<User?> Register(string userName, string officialName, string password)
         {
             if (repository.Users.GetList().Result.FirstOrDefault(x => x.UserName.ToLower() == userName.ToLower()) is null)
             {
@@ -67,7 +66,7 @@ namespace ScienceTrack.Services
                 repository.Users.Create(user);
                 await repository.Users.Save();
                 logger.LogInformation("user: " + user.UserName + " was registered");
-                return await Authorize(context, userName, password);
+                return user;
             }
             logger.LogWarning("user is already existing");
             return null;
