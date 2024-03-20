@@ -21,10 +21,10 @@ namespace ScienceTrack.Services
         public async Task<User?> Authorize(HttpContext context, string userName, string password)
         {
             var passwordHasher = new PasswordHasher<User>();
-            User? user = repository.Users.GetList().Result.Where(u => u.UserName.ToLower() == userName.ToLower() &&
-            (passwordHasher.VerifyHashedPassword(u, u.PasswordHash, password) == PasswordVerificationResult.Success ||
-            passwordHasher.VerifyHashedPassword(u, u.PasswordHash, password) == PasswordVerificationResult.SuccessRehashNeeded))
-            .FirstOrDefault();
+            User? user = repository.Users.GetList().Result
+                .FirstOrDefault(u => u.UserName.ToLower() == userName.ToLower() &&
+                                     (passwordHasher.VerifyHashedPassword(u, u.PasswordHash, password) == PasswordVerificationResult.Success ||
+                                      passwordHasher.VerifyHashedPassword(u, u.PasswordHash, password) == PasswordVerificationResult.SuccessRehashNeeded));
             if (user is null) return null;
             var claims = new List<Claim>
                 {

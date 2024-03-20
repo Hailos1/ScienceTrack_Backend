@@ -25,6 +25,22 @@ namespace ScienceTrack.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin")]
+        public async Task<IActionResult> RemoveUser(string username, int? userId = null)
+        {
+            await service.RemoveUser(username, userId);
+            return Ok();
+        }
+        
+        [HttpGet]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetUsers(int pageNum = 1, int pageSize = 10)
+        {
+            var answer = await service.GetUsers(HttpContext.Response, pageNum, pageSize);
+            return Ok(answer);
+        }
+
+        [HttpPost("RemoveAllUsers")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> ClearUsers()
         {
             await service.ClearUsers();
